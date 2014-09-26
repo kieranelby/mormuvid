@@ -1,5 +1,4 @@
 import logging
-
 from subprocess32 import check_call
 
 import pykka
@@ -33,7 +32,7 @@ class DownloaderActor(pykka.ThreadingActor):
             check_call(command, shell=False)
         except Exception:
             logger.exception("download of %s from %s failed", song, video_watch_url)
-            self.librarian.notify_download_failed(song)
+            self.librarian.notify_download_failed(song, video_watch_url)
         else:
             logger.info("download of %s completed", song)
-            self.librarian.notify_download_completed(song)
+            self.librarian.notify_download_completed(song, video_watch_url)

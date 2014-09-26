@@ -18,6 +18,7 @@ class App:
     def start(self):
         logger.info("starting up ...")
         librarian = Librarian()
+        librarian.clean_up_lock_files()
         downloader = DownloaderActor.start(librarian).proxy()
         finder = FinderActor.start(librarian, downloader).proxy()
         scout = ScoutActor.start(librarian, finder)

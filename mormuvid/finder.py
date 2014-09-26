@@ -30,10 +30,10 @@ class FinderActor(pykka.ThreadingActor):
         try:
             video_watch_url = self.get_video_watch_url(song)
         except Exception as e:
+            self.librarian.notify_search_failed(song, None)
             logger.exception("could not find music video for %s", song)
             return
         logger.info("queueing download of {}".format(song))
-        self.librarian.notify_download_queued(song, video_watch_url)
         self.downloader.download(song, video_watch_url)
 
     def get_video_watch_url(self, song):

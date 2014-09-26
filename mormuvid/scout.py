@@ -65,13 +65,9 @@ class ScoutActor(pykka.ThreadingActor):
             logger.exception("unable to scrape songs")
             songs = []
         for song in songs:
-            if not self.librarian.want_song(song):
-                logger.info("don't want/need song {}".format(song))
+            if not self.librarian.want_song(song, mark_queued=True):
+                logger.info("don't currently want/need song {}".format(song))
                 continue
-            logger.info("queuing search for song {}".format(song))
-            # there is a danger we might overwhelm the finder
-            # with work - could do with some throttling like:
-            # http://www.michaelpollmeier.com/akka-work-pulling-pattern/
             self.finder.find(song)
         self._schedule_find_songs_and_repeat(last_scrape_at)
 
