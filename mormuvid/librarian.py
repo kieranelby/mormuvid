@@ -30,7 +30,7 @@ class Librarian:
 
     def _get_videos_dir(self):
         home = path.expanduser("~")
-        videos_dir = path.join(home, "Videos", "Music Videos")
+        videos_dir = path.join(home, "Videos", "MusicVideos")
         if not path.isdir(videos_dir):
           logger.info("creating new videos_dir at %s", videos_dir)
           makedirs(videos_dir)
