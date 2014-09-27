@@ -71,7 +71,8 @@ setup(
         'requests>=2.3.0',
         'pykka>=1.2.0',
         'youtube-dl>=2014.07.30',
-        'subprocess32>=3.2.6'
+        'subprocess32>=3.2.6',
+        'cherrypy>=3.3.0'
     ],
 
     # If there are data files included in your packages that need to be
