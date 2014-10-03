@@ -72,7 +72,8 @@ setup(
         'pykka>=1.2.0',
         'youtube-dl>=2014.07.30',
         'subprocess32>=3.2.6',
-        'cherrypy>=3.3.0'
+        'cherrypy>=3.3.0',
+        'bottle>=0.12.7'
     ],
 
     # If there are data files included in your packages that need to be
@@ -81,6 +82,11 @@ setup(
     ## package_data={
     ##    'sample': ['package_data.dat'],
     ##},
+    package_data={
+        'mormuvid': [
+            'www/static/*.html'
+        ]
+    },
 
     # Although 'package_data' is the preferred approach, in some case you may
     # need to place data files outside of your packages.

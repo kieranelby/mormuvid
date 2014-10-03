@@ -78,10 +78,13 @@ class Librarian:
             return self._read_lock_file(lock_filepath)
         return SongStatus('UNKNOWN', time(), None)
 
-    def notify_download_completed(self, song, video_watch_url):
-        self.num_queued -= 1
-        self._delete_lock_file(song)
-        self._write_nfo_file(song, video_watch_url)
+    def notify_search_queued(self, song):
+        self.num_queued += 1
+        self._write_lock_file(song, 'QUEUED', None)
+        return
+
+    def notify_download_queued(self, song, video_watch_url):
+        self._write_lock_file(song, 'QUEUED', video_watch_url)
         return
 
     def notify_search_failed(self, song):
@@ -94,13 +97,15 @@ class Librarian:
         self._write_lock_file(song, 'FAILED', video_watch_url)
         return
 
-    def notify_search_queued(self, song):
-        self.num_queued += 1
-        self._write_lock_file(song, 'QUEUED', None)
+    def notify_download_cancelled(self, song):
+        self.num_queued -= 1
+        self._delete_lock_file(song)
         return
 
-    def notify_download_queued(self, song, video_watch_url):
-        self._write_lock_file(song, 'QUEUED', video_watch_url)
+    def notify_download_completed(self, song, video_watch_url):
+        self.num_queued -= 1
+        self._delete_lock_file(song)
+        self._write_nfo_file(song, video_watch_url)
         return
 
     def _get_nfo_filepath(self, song):

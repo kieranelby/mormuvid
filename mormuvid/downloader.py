@@ -11,6 +11,11 @@ def _register_downloader(downloader):
     _downloaders.append(downloader)
 
 def shutdown_downloaders():
+    """
+    Unfortunately the normal actor.stop() doesn't work well if the
+    downloader is blocked waiting for a subprocess - use this to
+    stop the downloader (presumably from another thread).
+    """
     global _downloaders
     logger.info("shutting down downloaders")
     for downloader in _downloaders:
@@ -43,6 +48,7 @@ class DownloaderActor(pykka.ThreadingActor):
     def download(self, song, video_watch_url):
         if self.is_shutdown:
             logger.info("not downloading %s since shutting down", song)
+            self.librarian.notify_download_cancelled(song)
             return
         base_filepath = self.librarian.get_base_filepath(song)
         logger.info("attempting to download %s from %s to %s", song, video_watch_url, base_filepath)
@@ -53,6 +59,9 @@ class DownloaderActor(pykka.ThreadingActor):
             # TODO: is there an easy way to make the subprocess
             # automatically exit if this thread dies ...
             # TODO: actor will be unresponsive if we block here?
+            # But if we don't block then how to avoid kicking off
+            # too many parallel downloads?
+            # TODO - would be nice to use a timeout too.
             popen = Popen(command, start_new_session=True)
             self.subprocess = popen
             resultcode = popen.wait()
@@ -60,6 +69,7 @@ class DownloaderActor(pykka.ThreadingActor):
             if resultcode != 0:
                 if self.is_shutdown:
                     logger.info("cancelling download of %s since shutting down", song)
+                    self.librarian.notify_download_cancelled(song)
                     return
                 else:
                     raise Exception("subcommand %s returned non-zero exit code %s", command, resultcode)

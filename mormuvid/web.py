@@ -1,12 +1,27 @@
-import cherrypy
+import logging
+import os
+
+from bottle import route, run, debug, static_file
+
+logger = logging.getLogger(__name__)
+
+_ROOT = os.path.abspath(os.path.dirname(__file__))
+def get_www_path(path):
+    return os.path.join(_ROOT, 'www', path)
 
 def start_web_and_block():
-    cherrypy.quickstart(Web())
+    debug(True)
+    run()
 
 def stop_web():
-    cherrypy.engine.exit()
+    """Request for the server to shutdown."""
+    # TODO - need to figure out how to stop bottle!
+    pass
 
-class Web(object):
-    @cherrypy.expose
-    def index(self):
-        return "Hello World!"
+@route('/')
+def home():
+    return "Hello World!"
+
+@route('/static/<filename>')
+def server_static(filename):
+    return static_file(filename, root=get_www_path('static'))

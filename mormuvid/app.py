@@ -32,7 +32,7 @@ def _register_app(app):
 
 class App:
     """
-    Starts everything up ...
+    Starts and stops everything.
     """
 
     def start(self):
@@ -48,12 +48,13 @@ class App:
 
     def stop(self):
         logger.info("exiting ...")
-        logger.info("stopping web server ...")
-        stop_web()
         logger.info("stopping downloaders ...")
         shutdown_downloaders()
         logger.info("waiting for actors to stop ...")
         try:
             ActorRegistry.stop_all(timeout=30)
-        finally:
-            logger.info("finished")
+        except Exception:
+            logger.exception()
+        logger.info("stopping web server ...")
+        stop_web()
+        logger.info("finished")
