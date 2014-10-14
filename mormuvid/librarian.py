@@ -11,6 +11,10 @@ from os import makedirs
 from time import time
 
 from jinja2 import Environment
+import pykka
+
+from mormuvid.finder import FinderActor
+from mormuvid.downloader import DownloaderActor
 
 logger = logging.getLogger(__name__)
 
@@ -43,15 +47,6 @@ class Librarian:
         base_filepath = path.join(self._get_videos_dir(), safe_name)
         return base_filepath
 
-    def want_song(self, song, mark_queued=False):
-        """
-        Do we want to attempt to download this particular song right now?
-        """
-        wanted = self._want_song(song)
-        if mark_queued and wanted:
-            self.notify_search_queued(song)
-        return wanted
-
     def _want_song(self, song):
         if self.too_many_songs_queued():
             return False
@@ -78,23 +73,47 @@ class Librarian:
             return self._read_lock_file(lock_filepath)
         return SongStatus('UNKNOWN', time(), None)
 
-    def notify_search_queued(self, song):
+    def _get_finder(self):
+        refs = pykka.ActorRegistry.get_by_class(FinderActor)
+        return refs[0].proxy()
+
+    def _get_downloader(self):
+        refs = pykka.ActorRegistry.get_by_class(DownloaderActor)
+        return refs[0].proxy()
+
+    def notify_song_scouted(self, song):
+        wanted = self._want_song(song)
+        if wanted:
+            self._notify_search_queued(song)
+            self._get_finder().find(song)
+        else:
+            logger.info("don't currently want/need song {}".format(song))
+        return
+
+    def _notify_search_queued(self, song):
         self.num_queued += 1
         self._write_lock_file(song, 'QUEUED', None)
         return
 
-    def notify_download_queued(self, song, video_watch_url):
-        self._write_lock_file(song, 'QUEUED', video_watch_url)
+    def notify_song_found(self, song, video_watch_url):
+        logger.info("queueing download of {}".format(song))
+        song.mark_found(video_watch_url)
+        self._notify_download_queued(song)
+        self._get_downloader().download(song)
         return
 
-    def notify_search_failed(self, song):
+    def notify_song_not_found(self, song):
         self.num_queued -= 1
         self._write_lock_file(song, 'FAILED', None)
         return
 
-    def notify_download_failed(self, song, video_watch_url):
+    def _notify_download_queued(self, song):
+        self._write_lock_file(song, 'QUEUED', song.video_watch_url)
+        return
+
+    def notify_download_failed(self, song):
         self.num_queued -= 1
-        self._write_lock_file(song, 'FAILED', video_watch_url)
+        self._write_lock_file(song, 'FAILED', song.video_watch_url)
         return
 
     def notify_download_cancelled(self, song):
@@ -102,10 +121,10 @@ class Librarian:
         self._delete_lock_file(song)
         return
 
-    def notify_download_completed(self, song, video_watch_url):
+    def notify_download_completed(self, song):
         self.num_queued -= 1
         self._delete_lock_file(song)
-        self._write_nfo_file(song, video_watch_url)
+        self._write_nfo_file(song, song.video_watch_url)
         return
 
     def _get_nfo_filepath(self, song):

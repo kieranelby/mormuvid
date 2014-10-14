@@ -11,7 +11,6 @@ logger = logging.getLogger(__name__)
 class FinderActor(pykka.ThreadingActor):
     """
     Given the name of a popular song, finds a URL where its music video can be watched.
-    It passes the URLs it finds to the DownloaderActor to be downloaded.
     This implementation merely searches on YouTube and picks the first result.
     """
 
@@ -19,22 +18,20 @@ class FinderActor(pykka.ThreadingActor):
 
     query_base_url = "https://www.youtube.com/results"
 
-    def __init__(self, librarian, downloader):
+    def __init__(self, librarian):
         super(FinderActor, self).__init__()
         self.session = requests.Session()
         self.librarian = librarian
-        self.downloader = downloader
 
     def find(self, song):
         logger.info("looking for music video of %s", song)
         try:
             video_watch_url = self.get_video_watch_url(song)
         except Exception as e:
-            self.librarian.notify_search_failed(song, None)
             logger.exception("could not find music video for %s", song)
+            self.librarian.notify_song_not_found(song)
             return
-        logger.info("queueing download of {}".format(song))
-        self.downloader.download(song, video_watch_url)
+        self.librarian.notify_song_found(song, video_watch_url)
 
     def get_video_watch_url(self, song):
         (search_result_url, search_result_content) = self.perform_search(song)

@@ -41,9 +41,9 @@ class App:
         _register_app(self)
         librarian = Librarian()
         librarian.start()
-        downloader = DownloaderActor.start(librarian).proxy()
-        finder = FinderActor.start(librarian, downloader).proxy()
-        scout = ScoutActor.start(librarian, finder)
+        DownloaderActor.start(librarian)
+        FinderActor.start(librarian)
+        ScoutActor.start(librarian)
         start_web_and_block()
 
     def stop(self):

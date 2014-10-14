@@ -45,17 +45,17 @@ class DownloaderActor(pykka.ThreadingActor):
             logger.info("killing subprocess %s", self.subprocess.pid)
             self.subprocess.terminate()
 
-    def download(self, song, video_watch_url):
+    def download(self, song):
         if self.is_shutdown:
             logger.info("not downloading %s since shutting down", song)
             self.librarian.notify_download_cancelled(song)
             return
         base_filepath = self.librarian.get_base_filepath(song)
-        logger.info("attempting to download %s from %s to %s", song, video_watch_url, base_filepath)
+        logger.info("attempting to download %s from %s to %s", song, song.video_watch_url, base_filepath)
         try:
             output_template = base_filepath + ".%(ext)s"
             command = ['youtube-dl', '-o', output_template,
-                       '--no-progress', '--no-mtime', '-c',  video_watch_url]
+                       '--no-progress', '--no-mtime', '-c',  song.video_watch_url]
             # TODO: is there an easy way to make the subprocess
             # automatically exit if this thread dies ...
             # TODO: actor will be unresponsive if we block here?
@@ -74,8 +74,8 @@ class DownloaderActor(pykka.ThreadingActor):
                 else:
                     raise Exception("subcommand %s returned non-zero exit code %s", command, resultcode)
         except Exception:
-            logger.exception("download of %s from %s failed", song, video_watch_url)
-            self.librarian.notify_download_failed(song, video_watch_url)
+            logger.exception("download of %s from %s failed", song, song.video_watch_url)
+            self.librarian.notify_download_failed(song)
         else:
             logger.info("download of %s completed", song)
-            self.librarian.notify_download_completed(song, video_watch_url)
+            self.librarian.notify_download_completed(song)
