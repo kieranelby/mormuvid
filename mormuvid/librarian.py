@@ -60,7 +60,8 @@ class Librarian:
         songs = []
         for nfo_filepath in glob.iglob(path.join(videos_dir,'*.nfo')):
             song = self._read_nfo_file(nfo_filepath)
-            songs.append(song)
+            if song is not None:
+                songs.append(song)
         for lock_filepath in glob.iglob(path.join(videos_dir,'*.lock')):
             song = self._read_lock_file(lock_filepath)
             if song is not None:
@@ -149,9 +150,14 @@ class Librarian:
 
     def _read_nfo_file(self, nfo_filepath):
         logger.info("reading nfo_file %s", nfo_filepath)
-        with codecs.open(nfo_filepath, 'r', encoding='utf-8') as f:
-            xml_content = f.read()
-        return Song.from_nfo_xml(xml_content)
+        try:
+            with codecs.open(nfo_filepath, 'r', encoding='utf-8') as f:
+                xml_content = f.read()
+            return Song.from_nfo_xml(xml_content)
+        except:
+            logger.info("failed to read nfo_file %s", nfo_filepath)
+            return None
+
 
     def _get_lock_filepath(self, song):
         return self.get_base_filepath(song) + '.lock'
@@ -165,9 +171,13 @@ class Librarian:
 
     def _read_lock_file(self, lock_filepath):
         logger.info("reading lock_file %s", lock_filepath)
-        with codecs.open(lock_filepath, 'r', encoding='utf-8') as f:
-            xml_content = f.read()
-        song = Song.from_nfo_xml(xml_content)
+        try:
+            with codecs.open(lock_filepath, 'r', encoding='utf-8') as f:
+                xml_content = f.read()
+            song = Song.from_nfo_xml(xml_content)
+        except:
+            logger.info("failed to read lock_file %s", lock_filepath)
+            return None
         if song.is_stale():
             logger.info("removing lock file for stale song %s (status %s)", song, song.status)
             os.remove(lock_filepath)
