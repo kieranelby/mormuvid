@@ -44,7 +44,7 @@ class Librarian:
         return base_filepath
 
     def _is_download_wanted(self, possible_new_song):
-        if self.too_many_songs_queued():
+        if self._too_many_songs_queued():
             logger.info("don't want song %s right now since too many songs already queued up", possible_new_song)
             return False
         persisted_song = self.retrieve(possible_new_song)
@@ -53,6 +53,19 @@ class Librarian:
             return True
         else:
             return persisted_song.is_download_wanted()
+
+    def get_songs(self):
+        logger.info("cleaning up lock files")
+        videos_dir = self._get_videos_dir()
+        songs = []
+        for nfo_filepath in glob.iglob(path.join(videos_dir,'*.nfo')):
+            song = self._read_nfo_file(nfo_filepath)
+            songs.append(song)
+        for lock_filepath in glob.iglob(path.join(videos_dir,'*.lock')):
+            song = self._read_lock_file(lock_filepath)
+            if song is not None:
+                songs.append(song)
+        return songs
 
     def retrieve(self, song):
         nfo_filepath = self._get_nfo_filepath(song)
@@ -153,7 +166,7 @@ class Librarian:
         with codecs.open(lock_filepath, 'r', encoding='utf-8') as f:
             xml_content = f.read()
         song = Song.from_nfo_xml(xml_content)
-        if self._is_stale(song):
+        if song.is_stale():
             logger.info("removing lock file for stale song %s (status %s)", song, song.status)
             os.remove(lock_filepath)
             return None
@@ -163,7 +176,7 @@ class Librarian:
         lock_filepath = self._get_lock_filepath(song)
         os.remove(lock_filepath)
 
-    def too_many_songs_queued(self):
+    def _too_many_songs_queued(self):
         return self.num_queued >= 5
 
     def _clean_up_lock_files(self):

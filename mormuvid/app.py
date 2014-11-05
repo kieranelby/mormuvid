@@ -44,7 +44,7 @@ class App:
         DownloaderActor.start(librarian)
         FinderActor.start(librarian)
         ScoutActor.start(librarian)
-        start_web_and_block()
+        start_web_and_block(librarian)
 
     def stop(self):
         logger.info("exiting ...")

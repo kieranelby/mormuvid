@@ -73,7 +73,7 @@ class Song(object):
         if status in ['COMPLETED', 'BANNED']:
             # no, already got it or explicity rejected
             return False
-        elif status in ['FIND_QUEUED', 'DOWNLOAD_QUEUED', 'FAILED', 'FOUND']:
+        elif status in ['SCOUTED', 'FIND_QUEUED', 'DOWNLOAD_QUEUED', 'FAILED', 'FOUND']:
             # sounds like we've tried or are trying to get this song -
             # only want to download it if attempt has taken too long.
             age_seconds = time() - self.updated_at
@@ -87,10 +87,25 @@ class Song(object):
         """
         Can we forget about this song?
         """
-        return not self.is_download_wanted()
+        status = self.status
+        if status in ['COMPLETED', 'BANNED']:
+            # no, already got it or explicity rejected
+            return False
+        elif status in ['FIND_QUEUED', 'DOWNLOAD_QUEUED', 'FAILED', 'FOUND']:
+            # sounds like we've tried or are trying to get this song -
+            # only want to download it if attempt has taken too long.
+            age_seconds = time() - self.updated_at
+            retry_after_seconds = (24 * 60 * 60)
+            return age_seconds > retry_after_seconds
+        else:
+            # unknown status - guess leave it alone?
+            return False
 
     def __str__(self):
-        return '"{}" by "{}"'.format(self.title, self.artist)
+        return '"{}" by "{}"'.format(
+            self.title.encode('unicode-escape'),
+            self.artist.encode('unicode-escape')
+        )
 
     @staticmethod
     def from_nfo_xml(nfo_xml):

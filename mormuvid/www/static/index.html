@@ -1,0 +1,34 @@
+<html>
+<head>
+<script type="text/javascript" src="vendor/jquery-1.11.1.min.js"></script>
+<script type="text/javascript" src="vendor/underscore-1.7.0.js"></script>
+<script type="text/javascript" src="vendor/backbone-1.1.2.min.js"></script>
+<script type="text/javascript" src="mormuvid.js"></script>
+<script type="text/template" id="tpl-songs">
+    <h2>List of Songs</h2>
+    <button id="btnRefreshSongs">Refresh</button>
+    <ul class="songs-container"></ul>
+</script>
+<script type="text/template" id="tpl-song">
+    <dl>
+        <dt>Artist:</dt>
+        <dd><%- artist %></dd>
+        <dt>Title:</dt>
+        <dd><%- title %></dd>
+        <dt>Status:</dt>
+        <dd><%- status %></dd>
+    </dl>
+    <hr>
+</script>
+<script>
+$(function() {
+    Mormuvid.start();
+});
+</script>
+</head>
+
+<body>
+This is a test
+<div class="main-container"></div>
+</body>
+</html>

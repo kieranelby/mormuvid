@@ -73,7 +73,8 @@ setup(
         'youtube-dl>=2014.07.30',
         'subprocess32>=3.2.6',
         'cherrypy>=3.3.0',
-        'bottle>=0.12.7'
+        'bottle>=0.12.7',
+        'jsonpickle>=0.8.0'
     ],
 
     # If there are data files included in your packages that need to be
