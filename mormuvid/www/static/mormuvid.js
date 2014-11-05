@@ -7,6 +7,12 @@ window.Mormuvid = {
     Router: {},
     start: function() {
         var songs = new Mormuvid.Collections.Songs();
+        var songsView = new Backbone.CollectionView({
+          el : $( "table#main-songs-table" ),
+          selectable : true,
+          collection : songs,
+          modelView : Mormuvid.Views.Song
+        });
         var router = new Mormuvid.Router();
         router.on('route:home', function() {
             router.navigate('songs', {
@@ -15,15 +21,9 @@ window.Mormuvid = {
             });
         });
         router.on('route:showSongs', function() {
+            songsView.render();
             songs.fetch();
         });
-        var songsView = new Backbone.CollectionView({
-          el : $( "table#main-songs-table" ),
-          selectable : true,
-          collection : songs,
-          modelView : Mormuvid.Views.Song
-        });
-        songsView.render();
         Backbone.history.start();
     }
 };
@@ -50,10 +50,7 @@ Mormuvid.Collections.Songs = Backbone.Collection.extend({
 
 Mormuvid.Views.Song = Backbone.View.extend({
     tagName: 'tr',
-    template: null, // will be lazy-loaded
-    initialize: function() {
-        this.template = _.template($('#tpl-song').html());
-    },
+    template: _.template($('#tpl-song').html()),
     render: function() {
         var html = this.template(this.model.toJSON());
         this.$el.append(html);

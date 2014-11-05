@@ -114,7 +114,7 @@ class Song(object):
         song = Song(musicvideo.artist.string.strip(), musicvideo.title.string.strip())
         song.album = musicvideo.album.string.strip()
         mormuvid_info = soup.musicvideo.mormuvid
-        if mormuvid_info is None:
+        if mormuvid_info is None or not 'status' in mormuvid_info:
             song.status = 'COMPLETED'
             song.updated_at = None
             song.video_watch_url = None
