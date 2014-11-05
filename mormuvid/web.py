@@ -16,7 +16,7 @@ def start_web_and_block(the_librarian):
     global librarian
     librarian = the_librarian
     debug(True)
-    run()
+    run(host='0.0.0.0', port=2156)
 
 def stop_web():
     """Request for the server to shutdown."""
