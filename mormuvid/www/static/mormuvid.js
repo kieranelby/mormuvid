@@ -1,3 +1,5 @@
+$(function() {
+
 window.Mormuvid = {
     Models: {},
     Collections: {},
@@ -13,13 +15,17 @@ window.Mormuvid = {
             });
         });
         router.on('route:showSongs', function() {
-            var songsView = new Mormuvid.Views.Songs({
-                collection: songs
-            });
-            $('.main-container').html(songsView.render().$el);
+            songs.fetch();
         });
+        var songsView = new Backbone.CollectionView({
+          el : $( "table#main-songs-table" ),
+          selectable : true,
+          collection : songs,
+          modelView : Mormuvid.Views.Song
+        });
+        songsView.render();
         Backbone.history.start();
-    },
+    }
 };
 
 Mormuvid.Router = Backbone.Router.extend({
@@ -30,6 +36,11 @@ Mormuvid.Router = Backbone.Router.extend({
 });
 
 Mormuvid.Models.Song = Backbone.Model.extend({
+    defaults: {
+        artist: 'UNKNOWN',
+        title: 'UNKNOWN',
+        status: 'UNKNOWN'
+    }
 });
 
 Mormuvid.Collections.Songs = Backbone.Collection.extend({
@@ -38,6 +49,7 @@ Mormuvid.Collections.Songs = Backbone.Collection.extend({
 });
 
 Mormuvid.Views.Song = Backbone.View.extend({
+    tagName: 'tr',
     template: null, // will be lazy-loaded
     initialize: function() {
         this.template = _.template($('#tpl-song').html());
@@ -49,28 +61,6 @@ Mormuvid.Views.Song = Backbone.View.extend({
     }
 });
 
-Mormuvid.Views.Songs = Backbone.View.extend({
-    tagName: 'div',
-    template: null, // will be lazy-loaded
-    events: {
-        'click #btnRefreshSongs': 'refreshSongsClicked'
-    },
-    initialize: function() {
-        this.template = _.template($('#tpl-songs').html());
-        this.listenTo(this.collection, 'reset add change remove', this.render, this);
-        this.collection.fetch();
-    },
-    renderOne: function(song) {
-        var itemView = new Mormuvid.Views.Song({model: song});
-        this.$('.songs-container').append(itemView.render().$el);
-    },
-    render: function() {
-        var html = this.template();
-        this.$el.html(html);
-        this.collection.each(this.renderOne, this);
-        return this;
-    },
-    refreshSongsClicked : function() {
-        this.collection.fetch();
-    }
+Mormuvid.start();
+
 });

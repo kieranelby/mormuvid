@@ -1,34 +1,60 @@
 <html>
 <head>
-<script type="text/javascript" src="vendor/jquery-1.11.1.min.js"></script>
+<style type="text/css">
+
+table.collection-list {
+  border-collapse: collapse;
+  width: 800px;
+  border: 1px solid #AAA;
+  font-family: "Helvetica Neue", Helvetica, arial;
+  cursor: pointer;
+}
+
+table.collection-list thead {
+    border-bottom: 1px solid #C9C9C9;
+    font-weight: bold;
+}
+
+table.collection-list tr:nth-child(even) {
+  background: #EBF0FF;
+}
+
+table.collection-list tr.selected {
+  color: #FFF;
+  background: #678BE4;
+}
+
+table.collection-list tr td {
+  padding: 10px 20px;
+  border-right: 1px solid #AAA;
+}
+
+</style>
 <script type="text/javascript" src="vendor/underscore-1.7.0.js"></script>
-<script type="text/javascript" src="vendor/backbone-1.1.2.min.js"></script>
+<script type="text/javascript" src="vendor/jquery-1.11.1.js"></script>
+<script type="text/javascript" src="vendor/jquery-ui-1.10.2.js"></script>
+<script type="text/javascript" src="vendor/backbone-1.1.2.js"></script>
+<script type="text/javascript" src="vendor/backbone.courier-0.5.7.js"></script>
+<script type="text/javascript" src="vendor/backbone.collectionView-0.11.4.js"></script>
 <script type="text/javascript" src="mormuvid.js"></script>
-<script type="text/template" id="tpl-songs">
-    <h2>List of Songs</h2>
-    <button id="btnRefreshSongs">Refresh</button>
-    <ul class="songs-container"></ul>
-</script>
 <script type="text/template" id="tpl-song">
-    <dl>
-        <dt>Artist:</dt>
-        <dd><%- artist %></dd>
-        <dt>Title:</dt>
-        <dd><%- title %></dd>
-        <dt>Status:</dt>
-        <dd><%- status %></dd>
-    </dl>
-    <hr>
-</script>
-<script>
-$(function() {
-    Mormuvid.start();
-});
+    <td><%= artist %></td>
+    <td><%= title %></td>
+    <td><%= status %></td>
 </script>
 </head>
-
 <body>
-This is a test
-<div class="main-container"></div>
+<h1>mormuvid</h1>
+<h2>songs</h2>
+<table id="main-songs-table" class="">
+<thead>
+<tr>
+    <td>Artist</td>
+    <td>Title</td>
+    <td>Status</td>
+</tr>
+</thead>
+<tbody><!-- should be populated by backbone --></tbody>
+</table>
 </body>
 </html>
