@@ -20,9 +20,6 @@ window.Mormuvid = {
         });
         Backbone.history.start();
     },
-    refreshSongs: function() {
-
-    }
 };
 
 Mormuvid.Router = Backbone.Router.extend({
@@ -77,4 +74,3 @@ Mormuvid.Views.Songs = Backbone.View.extend({
         this.collection.fetch();
     }
 });
-

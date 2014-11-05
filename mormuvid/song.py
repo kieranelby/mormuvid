@@ -113,8 +113,13 @@ class Song(object):
         musicvideo = soup.musicvideo
         song = Song(musicvideo.artist.string.strip(), musicvideo.title.string.strip())
         song.album = musicvideo.album.string.strip()
-        mormuvid = soup.musicvideo.mormuvid
-        song.status = mormuvid.status.string.strip()
-        song.updated_at = float(mormuvid.updated_at.string.strip())
-        song.video_watch_url = mormuvid.video_watch_url.string.strip()
+        mormuvid_info = soup.musicvideo.mormuvid
+        if mormuvid_info is None:
+            song.status = 'COMPLETED'
+            song.updated_at = None
+            song.video_watch_url = None
+        else:
+            song.status = mormuvid_info.status.string.strip()
+            song.updated_at = float(mormuvid_info.updated_at.string.strip())
+            song.video_watch_url = mormuvid_info.video_watch_url.string.strip()
         return song
