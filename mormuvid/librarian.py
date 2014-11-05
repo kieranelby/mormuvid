@@ -148,6 +148,7 @@ class Librarian:
         return
 
     def _read_nfo_file(self, nfo_filepath):
+        logger.info("reading nfo_file %s", nfo_filepath)
         with codecs.open(nfo_filepath, 'r', encoding='utf-8') as f:
             xml_content = f.read()
         return Song.from_nfo_xml(xml_content)
@@ -163,6 +164,7 @@ class Librarian:
         return
 
     def _read_lock_file(self, lock_filepath):
+        logger.info("reading lock_file %s", lock_filepath)
         with codecs.open(lock_filepath, 'r', encoding='utf-8') as f:
             xml_content = f.read()
         song = Song.from_nfo_xml(xml_content)
