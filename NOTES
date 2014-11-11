@@ -1,0 +1,14 @@
+apt repositories needed on 12.04:
+ppa:chris-lea/node.js
+
+apt packages
+nodejs
+ruby1.9.1-dev
+
+npm modules
+bower
+yo
+grunt-cli
+
+ruby gems (had to override ubuntu 12.04 ones)
+compass
