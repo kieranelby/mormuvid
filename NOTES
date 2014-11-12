@@ -1,14 +1,20 @@
+REQUIREMENTS NOT LISTED IN setup.py
+
 apt repositories needed on 12.04:
 ppa:chris-lea/node.js
 
-apt packages
+apt packages:
 nodejs
 ruby1.9.1-dev
 
-npm modules
+npm modules:
 bower
 yo
 grunt-cli
 
-ruby gems (had to override ubuntu 12.04 ones)
+ruby gems: (had to override ubuntu 12.04 ones)
 compass
+
+BUILD PROCESS NOT COVERED BY setup.py
+
+Need to run grunt in mormuvid/client directory to re-generate files in mormuvid/client/dist.

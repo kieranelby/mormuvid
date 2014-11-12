@@ -1,3 +1,5 @@
+import re
+
 from time import time
 
 from jinja2 import Environment
@@ -21,6 +23,12 @@ nfo_template_str = """<musicvideo>
 </musicvideo>
 """
 
+def _make_id(artist, title):
+    raw_name = artist + " - " + title
+    # TODO: obviously, this won't work at all well with non-latin-alphabet song names ...
+    safe_name = re.sub(r"[^0-9A-Za-z .,;()_\-]", "_", raw_name)
+    return safe_name
+
 class Song(object):
     """
     Represents a song.
@@ -31,6 +39,7 @@ class Song(object):
         # make album name up for now
         self.album = artist
         self.title = title
+        self.id = _make_id(artist,title);
         self.mark_updated()
         self.video_watch_url = None
 

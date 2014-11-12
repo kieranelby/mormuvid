@@ -1,0 +1,9 @@
+<h1>Songs Index</h1>
+<input type="button" value="test" {{action 'test' model}}></input>
+<ul>
+{{#each controller.arrangedContent}}
+    <li>{{#link-to 'song' this}}{{this.artist}} - {{this.title}}{{/link-to}}</li>
+{{/each}}
+</ul>
+
+{{outlet}}

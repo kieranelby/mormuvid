@@ -1,12 +1,25 @@
 from setuptools import setup, find_packages  # Always prefer setuptools over distutils
 from codecs import open  # To use a consistent encoding
 from os import path
+import os
 
 here = path.abspath(path.dirname(__file__))
 
 # Get the long description from the relevant file
 with open(path.join(here, 'README.rst'), encoding='utf-8') as f:
     long_description = f.read()
+
+def recursive_file_list(dir):
+    matches = []
+    for root, dirnames, filenames in os.walk(dir):
+        for filename in filenames:
+            matches.append(os.path.join(root, filename))
+    return matches
+
+# Sigh.
+mormuvid_client_dist_files = \
+  [path.relpath(x, path.join(here, 'mormuvid')) for x in \
+    recursive_file_list(path.join(here, 'mormuvid', 'client', 'dist'))]
 
 setup(
     name='mormuvid',
@@ -58,7 +71,7 @@ setup(
 
     # You can just specify the packages manually here if your project is
     # simple. Or you can use find_packages().
-    packages=find_packages(exclude=['contrib', 'docs', 'tests*']),
+    packages=['mormuvid'],
 
     # List run-time dependencies here.  These will be installed by pip when your
     # project is installed. For an analysis of "install_requires" vs pip's
@@ -77,16 +90,11 @@ setup(
         'jsonpickle>=0.8.0'
     ],
 
-    # If there are data files included in your packages that need to be
-    # installed, specify them here.  If using Python 2.6 or less, then these
-    # have to be included in MANIFEST.in as well.
-    ## package_data={
-    ##    'sample': ['package_data.dat'],
-    ##},
+    # TODO - explain
+    include_package_data=False,
     package_data={
-        'mormuvid': [
-            'www/static/*.html'
-        ]
+        'mormuvid': mormuvid_client_dist_files + [
+        ],
     },
 
     # Although 'package_data' is the preferred approach, in some case you may

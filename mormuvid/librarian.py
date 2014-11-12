@@ -37,11 +37,7 @@ class Librarian:
         return videos_dir 
 
     def get_base_filepath(self, song):
-        raw_name = song.artist + " - " + song.title
-        # TODO: obviously, this won't work at all with non-latin-alphabet song names ...
-        safe_name = re.sub(r"[^0-9A-Za-z .,;()_\-]", "_", raw_name)
-        base_filepath = path.join(self._get_videos_dir(), safe_name)
-        return base_filepath
+        return path.join(self._get_videos_dir(), song.id)
 
     def _is_download_wanted(self, possible_new_song):
         if self._too_many_songs_queued():
@@ -54,8 +50,14 @@ class Librarian:
         else:
             return persisted_song.is_download_wanted()
 
+    def get_song_by_id(self, song_id):
+        songs = self.get_songs()
+        for song in songs:
+            if song.id == song_id:
+                return song
+        return None
+
     def get_songs(self):
-        logger.info("cleaning up lock files")
         videos_dir = self._get_videos_dir()
         songs = []
         for nfo_filepath in glob.iglob(path.join(videos_dir,'*.nfo')):

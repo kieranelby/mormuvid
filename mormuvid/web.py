@@ -9,8 +9,7 @@ logger = logging.getLogger(__name__)
 librarian = None
 
 _ROOT = os.path.abspath(os.path.dirname(__file__))
-def get_www_path(path):
-    return os.path.join(_ROOT, 'www', path)
+_STATIC_PATH = os.path.join(_ROOT, 'client', 'dist')
 
 def start_web_and_block(the_librarian):
     global librarian
@@ -23,20 +22,20 @@ def stop_web():
     # TODO - need to figure out how to stop bottle!
     pass
 
-@route('/')
-def home():
-    return server_static('index.html')
-
-@route('/<filename>')
-def server_static(filename):
-    return static_file(filename, root=get_www_path('static'))
-
-@route('/vendor/<filename>')
-def server_static_vendor(filename):
-    return static_file(filename, root=os.path.join(get_www_path('static'),'vendor'))
-
 @route('/api/songs')
 def api_songs():
     global librarian
     songs = librarian.get_songs()
-    return jsonpickle.encode(songs)
+    return jsonpickle.encode({'songs': songs})
+
+@route('/api/songs/<song_id>')
+def api_song(song_id):
+    global librarian
+    song = librarian.get_song_by_id(song_id)
+    if song is not None:
+        return jsonpickle.encode({'song': song})
+
+@route('/<other_path:path>')
+def other_path(other_path):
+    logger.info("playing static file %s from %s", other_path, _STATIC_PATH)
+    return static_file(other_path, root=_STATIC_PATH)
