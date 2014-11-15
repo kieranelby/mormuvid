@@ -172,6 +172,8 @@ module.exports = function (grunt) {
         },
         useminPrepare: {
             html: '.tmp/index.html',
+            js: ['concat'],
+            css: ['concat'],
             options: {
                 dest: '<%= yeoman.dist %>'
             }
@@ -372,8 +374,8 @@ module.exports = function (grunt) {
         'concurrent:dist',
         'neuter:app',
         'concat',
-        'cssmin',
-        'uglify',
+        //'cssmin',
+        //'uglify',
         'copy',
         'rev',
         'usemin'

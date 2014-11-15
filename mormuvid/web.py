@@ -35,6 +35,10 @@ def api_song(song_id):
     if song is not None:
         return jsonpickle.encode({'song': song})
 
+@route('/')
+def root():
+    return other_path('index.html')
+
 @route('/<other_path:path>')
 def other_path(other_path):
     logger.info("playing static file %s from %s", other_path, _STATIC_PATH)
