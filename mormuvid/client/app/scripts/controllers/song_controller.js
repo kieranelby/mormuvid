@@ -1,4 +1,7 @@
 Client.SongController = Ember.ObjectController.extend({
-  // Implement your controller here.
+  actions: {
+    test: function () {
+        alert("blurrgg");
+    }
+  }
 });
-

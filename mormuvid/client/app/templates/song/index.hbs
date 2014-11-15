@@ -1,0 +1,9 @@
+<dl>
+  <dt>artist</dt><dd>{{artist}}</dd>
+  <dt>title</dt><dd>{{title}}</dd>
+  <dt>status</dt><dd>{{status}}</dd>
+</dl>
+
+<button class="btn" onclick="window.history.back()">Back</button>
+{{#link-to 'song.edit' class='btn btn-primary' role='button'}}Edit{{/link-to}}
+{{#link-to 'song.delete' class='btn btn-danger' role='button'}}Delete{{/link-to}}

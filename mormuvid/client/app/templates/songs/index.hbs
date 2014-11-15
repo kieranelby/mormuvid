@@ -1,9 +1,20 @@
-<h1>Songs Index</h1>
-<input type="button" value="test" {{action 'test' model}}></input>
-<ul>
-{{#each controller.arrangedContent}}
-    <li>{{#link-to 'song' this}}{{this.artist}} - {{this.title}}{{/link-to}}</li>
-{{/each}}
-</ul>
+<p>
+    {{#link-to 'songs.new' class="btn btn-primary" role='button'}}Add New Song »{{/link-to}}
+</p>
 
-{{outlet}}
+<table class="table table-hover table-condensed mormuvid-table-clickable">
+    <thead>
+        <tr>
+            <th>Artist</th>
+            <th>Title</th>
+        </tr>
+    </thead>
+    <tbody>
+        {{#each controller.arrangedContent}}
+        <tr {{action 'test' this}}>
+            <td>{{#link-to 'song' this}}{{this.artist}}{{/link-to}}</td>
+            <td>{{#link-to 'song' this}}{{this.title}}{{/link-to}}</td>
+        </tr>
+        {{/each}}
+    </tbody>
+</table>

@@ -1,34 +1,32 @@
 <div>
-    <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
-        <div class="navbar-header">
-            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
-                <span class="sr-only">Toggle navigation</span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-            </button>
-            <a class="navbar-brand" href="#">Your App</a>
+	<nav class="navbar navbar-default navbar-fixed-top" role="navigation">
+		<div class="navbar-header">
+			<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+				<span class="sr-only">Toggle navigation</span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+			</button>
+			<a class="navbar-brand" href="#">mormuvid</a>
+		</div>
+		<div class="collapse navbar-collapse navbar-ex1-collapse">
+            <ul class="nav navbar-nav">
+                {{#link-to "index" tagName="li"}}
+                    <a href="#"><span class="glyphicon glyphicon-home"></span> &nbsp &nbsp Home</a>
+                {{/link-to}}
+                {{#link-to "songs" tagName="li"}}
+                    <a href="#"><span class="glyphicon glyphicon-headphones"></span> &nbsp &nbsp Songs</a>
+                {{/link-to}}
+                {{#link-to "otherVideos" tagName="li"}}
+                    <a href="#"><span class="glyphicon glyphicon-facetime-video"></span> &nbsp &nbsp Other Videos</a>
+                {{/link-to}}
+                {{#link-to "settings" tagName="li"}}
+                    <a href="#"><span class="glyphicon glyphicon-cog"></span> &nbsp &nbsp Settings</a>
+                {{/link-to}}
+            </ul>
         </div>
-        <div class="collapse navbar-collapse navbar-ex1-collapse">
-        </div>
-    </nav>
-    <div class="container" id="main">
-        <div class="row">
-            <div>
-                <div class="col-md-3">
-                    <div class="well sidebar-nav">
-                        <strong>Colors</strong>
-                        <ul class="list-group">
-                        {{#each item in controller}}
-                            <li class="list-group-item">{{item}}</li>
-                        {{/each}}
-                        </ul>
-                    </div>
-                </div>
-                <div class="col-md-9">
-                    {{outlet}}
-                </div>
-            </div>
-        </div>
-    </div>
+	</nav>
+	<div class="container" id="main" role="main">
+		{{outlet}}
+	</div>
 </div>
