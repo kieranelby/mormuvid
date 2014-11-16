@@ -1,4 +1,7 @@
-var Client = window.Client = Ember.Application.create();
+var Client = window.Client = Ember.Application.create({
+  LOG_TRANSITIONS: true, 
+  LOG_TRANSITIONS_INTERNAL: true    
+});
 
 /* Order and include as you please. */
 require('scripts/controllers/*');
