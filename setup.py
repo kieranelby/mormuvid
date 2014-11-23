@@ -1,9 +1,29 @@
 from setuptools import setup, find_packages  # Always prefer setuptools over distutils
+from setuptools.command.test import test as TestCommand
 from codecs import open  # To use a consistent encoding
 from os import path
 import os
+import sys
 
 here = path.abspath(path.dirname(__file__))
+
+class PyTest(TestCommand):
+    user_options = [('pytest-args=', 'a', "Arguments to pass to py.test")]
+
+    def initialize_options(self):
+        TestCommand.initialize_options(self)
+        self.pytest_args = ['mormuvid/test']
+
+    def finalize_options(self):
+        TestCommand.finalize_options(self)
+        self.test_args = []
+        self.test_suite = True
+
+    def run_tests(self):
+        #import here, cause outside the eggs aren't loaded
+        import pytest
+        errno = pytest.main(self.pytest_args)
+        sys.exit(errno)
 
 # Get the long description from the relevant file
 with open(path.join(here, 'README.rst'), encoding='utf-8') as f:
@@ -79,6 +99,7 @@ setup(
     # https://packaging.python.org/en/latest/technical.html#install-requires-vs-requirements-files
     # NB - installing rtmpdump would be good too for some videos ...
     install_requires=[
+        'pytest>=2.6.4',
         'Jinja2>=2.6',
         'beautifulsoup4>=4.3.2',
         'requests>=2.3.0',
@@ -111,4 +132,8 @@ setup(
             'mormuvid=mormuvid.command_line:main',
         ],
     },
+
+    # Use pytest for tests.
+    tests_require=['pytest'],
+    cmdclass = {'test': PyTest},
 )

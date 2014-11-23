@@ -27,7 +27,8 @@ Client.SongsNewController = Ember.ObjectController.extend({
         var song = this.store.createRecord('song', {
             artist: artist,
             title: title,
-            status: 'NEW'
+            status: 'NEW',
+            videoURL: videoURL
         });
 
         // Save the new model

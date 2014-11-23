@@ -26,6 +26,7 @@ nfo_template_str = """<musicvideo>
 def _make_id(artist, title):
     raw_name = artist + " - " + title
     # TODO: obviously, this won't work at all well with non-latin-alphabet song names ...
+    # Perhaps use idna / punycode ?
     safe_name = re.sub(r"[^0-9A-Za-z .,;()_\-]", "_", raw_name)
     return safe_name
 

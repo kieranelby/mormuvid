@@ -1,6 +1,9 @@
 (function() {
 
-var Client = window.Client = Ember.Application.create();
+var Client = window.Client = Ember.Application.create({
+  LOG_TRANSITIONS: true, 
+  LOG_TRANSITIONS_INTERNAL: true    
+});
 
 /* Order and include as you please. */
 
@@ -10,11 +13,6 @@ var Client = window.Client = Ember.Application.create();
 (function() {
 
 Client.SongController = Ember.ObjectController.extend({
-  actions: {
-    test: function () {
-        alert("blurrgg");
-    }
-  }
 });
 
 
@@ -22,12 +20,43 @@ Client.SongController = Ember.ObjectController.extend({
 
 (function() {
 
+Client.SongsController = Ember.ObjectController.extend({
+});
+
 Client.SongsIndexController = Ember.ArrayController.extend({
   sortProperties: ['artist', 'title'],
   sortAscending: true,
   actions: {
-    test: function (song) {
+    clickSong: function (song) {
         this.transitionToRoute('song', song);
+    }
+  }
+});
+
+Client.SongsNewController = Ember.ObjectController.extend({
+  artist: null,
+  title: null,
+  videoURL: null,
+  actions: {
+    addSong: function () {
+
+        var artist = this.get('artist');
+        var title = this.get('title');
+        var videoURL = this.get('videoURL');
+
+        // TODO - validate
+
+        var song = this.store.createRecord('song', {
+            artist: artist,
+            title: title,
+            status: 'NEW',
+            videoURL: videoURL
+        });
+
+        // Save the new model
+        song.save();
+
+        // TODO - go somewhere
     }
   }
 });
@@ -48,7 +77,8 @@ Client.ApplicationAdapter = DS.RESTAdapter.extend({
 Client.Song = DS.Model.extend({
     artist: DS.attr('string'),
     title: DS.attr('string'),
-    status: DS.attr('string')
+    status: DS.attr('string'),
+    videoURL: DS.attr('string')
 });
 
 
@@ -87,11 +117,6 @@ Client.SongsIndexRoute = Ember.Route.extend({
     model: function() {
         return this.get('store').findAll('song');
     }
-    /*
-    setupController: function(controller) {
-        controller.set('model', this.get('store').findAll('song'));
-    }
-    */
 });
 
 })();

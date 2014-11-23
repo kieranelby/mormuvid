@@ -1,9 +1,11 @@
 import logging
 import os
 
-from bottle import route, run, debug, static_file
+from bottle import route, run, debug, static_file, request
 
 import jsonpickle
+
+from mormuvid.song import Song
 
 logger = logging.getLogger(__name__)
 librarian = None
@@ -22,11 +24,23 @@ def stop_web():
     # TODO - need to figure out how to stop bottle!
     pass
 
-@route('/api/songs')
+@route('/api/songs', method='GET')
 def api_songs():
     global librarian
     songs = librarian.get_songs()
     return jsonpickle.encode({'songs': songs})
+
+@route('/api/songs', method='POST')
+def api_songs_create():
+    global librarian
+    requestSong = request.json['song']
+    artist = requestSong['artist']
+    title = requestSong['title']
+    videoURL = requestSong['videoURL']
+    logger.info("adding song %s by %s at %s", title, artist, videoURL)
+    song = Song(artist, title)
+    librarian.notify_song_scouted(song)
+    return jsonpickle.encode({'song': song})
 
 @route('/api/songs/<song_id>')
 def api_song(song_id):
