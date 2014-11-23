@@ -37,7 +37,7 @@ class Librarian:
         return videos_dir 
 
     def get_base_filepath(self, song):
-        return path.join(self._get_videos_dir(), song.id)
+        return path.join(self._get_videos_dir(), song.get_base_file_name_wo_ext())
 
     def _is_download_wanted(self, possible_new_song):
         if self._too_many_songs_queued():
@@ -140,6 +140,9 @@ class Librarian:
         self._write_nfo_file(song)
         return
 
+    def _remove_path_and_ext(self, filepath):
+        return os.path.splitext(os.path.basename(filepath))[0]
+
     def _get_nfo_filepath(self, song):
         return self.get_base_filepath(song) + '.nfo'
 
@@ -155,7 +158,7 @@ class Librarian:
         try:
             with codecs.open(nfo_filepath, 'r', encoding='utf-8') as f:
                 xml_content = f.read()
-            return Song.from_nfo_xml(xml_content)
+            return Song.from_nfo_xml(xml_content, self._remove_path_and_ext(nfo_filepath))
         except:
             logger.info("failed to read nfo_file %s", nfo_filepath)
             return None
@@ -176,7 +179,7 @@ class Librarian:
         try:
             with codecs.open(lock_filepath, 'r', encoding='utf-8') as f:
                 xml_content = f.read()
-            song = Song.from_nfo_xml(xml_content)
+            song = Song.from_nfo_xml(xml_content, self._remove_path_and_ext(lock_filepath))
         except:
             logger.info("failed to read lock_file %s", lock_filepath)
             return None

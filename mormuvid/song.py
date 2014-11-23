@@ -27,20 +27,24 @@ def _make_id(artist, title):
     raw_name = artist + " - " + title
     # TODO: obviously, this won't work at all well with non-latin-alphabet song names ...
     # Perhaps use idna / punycode ?
-    safe_name = re.sub(r"[^0-9A-Za-z .,;()_\-]", "_", raw_name)
+    ascii_name = raw_name.encode('punycode')
+    safe_name = re.sub(r"[^0-9A-Za-z .,;()_\-]", "_", ascii_name)
     return safe_name
 
 class Song(object):
     """
     Represents a song.
     """
-    def __init__(self, artist, title):
+    def __init__(self, artist, title, song_id=None):
         self.status = 'SCOUTED'
         self.artist = artist
         # make album name up for now
         self.album = artist
         self.title = title
-        self.id = _make_id(artist,title);
+        if song_id is None:
+            self.id = _make_id(artist,title);
+        else:
+            self.id = song_id
         self.mark_updated()
         self.video_watch_url = None
 
@@ -67,6 +71,9 @@ class Song(object):
     def mark_downloaded(self):
         self.status = 'COMPLETED'
         self.mark_updated()
+
+    def get_base_file_name_wo_ext(self):
+        return self.id
 
     def to_nfo_xml(self):
         global nfo_template_str
@@ -118,13 +125,20 @@ class Song(object):
         )
 
     @staticmethod
-    def from_nfo_xml(nfo_xml):
+    def from_nfo_xml(nfo_xml, base_file_name_wo_ext=None):
+        is_mormuvid_file = True
         soup = BeautifulSoup(nfo_xml)
         musicvideo = soup.musicvideo
-        song = Song(musicvideo.artist.string.strip(), musicvideo.title.string.strip())
+        song = Song(musicvideo.artist.string.strip(), musicvideo.title.string.strip(), base_file_name_wo_ext)
         song.album = musicvideo.album.string.strip()
         mormuvid_info = soup.musicvideo.mormuvid
-        if mormuvid_info is None or not 'status' in mormuvid_info:
+        if mormuvid_info is None:
+            is_mormuvid_file = False
+        else:
+            status = mormuvid_info.find('status', recursive=False)
+            if status is None:
+                is_mormuvid_file = False
+        if not is_mormuvid_file:
             song.status = 'COMPLETED'
             song.updated_at = None
             song.video_watch_url = None
