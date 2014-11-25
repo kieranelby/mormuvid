@@ -57,6 +57,13 @@ class Librarian:
                 return song
         return None
 
+    def delete(self, song):
+        base_filepath_wo_ext = self.get_base_filepath(song)
+        for filepath in glob.iglob(base_filepath_wo_ext + ".*"):
+            if (os.path.splitext(filepath)[0] == base_filepath_wo_ext):
+                logger.info("deleting file %s which belonged to song %s", filepath, song)
+                os.remove(filepath)
+
     def get_songs(self):
         videos_dir = self._get_videos_dir()
         songs = []
@@ -88,7 +95,20 @@ class Librarian:
         refs = pykka.ActorRegistry.get_by_class(DownloaderActor)
         return refs[0].proxy()
 
-    def notify_song_scouted(self, song):
+    def notify_song_requested(self, artist, title, video_watch_url=None):
+        song = Song(artist, title)
+        if video_watch_url is None or not video_watch_url.strip():
+            logger.info("finding manually requested song {}".format(song))
+            self._notify_find_queued(song)
+            self._get_finder().find(song)
+        else:
+            logger.info("downloading manually requested song {} from {}".format(song, video_watch_url))
+            song = Song(artist, title)
+            self.notify_song_found(song, video_watch_url)
+        return song
+
+    def notify_song_scouted(self, artist, title):
+        song = Song(artist, title)
         wanted = self._is_download_wanted(song)
         if wanted:
             self._notify_find_queued(song)

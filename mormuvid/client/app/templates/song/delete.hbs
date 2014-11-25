@@ -1,3 +1,41 @@
-<div class="alert alert-warning" role="alert">
-  <strong>Sorry!</strong> Deleting Songs not implemented yet.
+<div class="row">
+    <div class="alert alert-warning" role="alert">
+        Are you <strong>sure</strong> you want to delete '{{title}}'' by {{artist}}?
+    </div>
+    <form role="form">
+    <div class="control-group">
+        {{#link-to 'song' class='btn btn-default' role='button'}}Cancel{{/link-to}}
+        <button class='btn btn-danger' {{action "deleteSong" song}}>Really Delete It</button>
+        <br>
+    </div>
+    </form>
+</div>
+
+<div class="row">&nbsp;</div>
+
+<div class="row">
+    <br>
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h4 class="panel-title">Advanced Delete Options</h4>
+      </div>
+      <div class="panel-body">
+
+        <form role="form">
+        <div class="checkbox">
+            <label>
+                {{input type="checkbox" checked=doNotDownloadSameSong id="doNotDownloadSameSong"}}
+                Never automatically download this song ('{{title}}'' by {{artist}}) again.
+            </label>
+        </div>
+        <div class="checkbox">
+            <label>
+                {{input type="checkbox" checked=doNotDownloadSameArtist id="doNotDownloadSameArtist"}}
+                Never automatically download <strong>any</strong> songs by this artist ({{artist}}) again.
+            </label>
+        </div>
+        </form>
+
+      </div>
+    </div>
 </div>

@@ -63,7 +63,7 @@ class ScoutActor(pykka.ThreadingActor):
             logger.exception("unable to scrape songs")
             songs = []
         for song in songs:
-            self.librarian.notify_song_scouted(song)
+            self.librarian.notify_song_scouted(song['artist'], song['title'])
         self._schedule_scout_songs_and_repeat(last_scrape_at)
 
     def get_songs(self):
@@ -76,8 +76,9 @@ class ScoutActor(pykka.ThreadingActor):
         song_like_links = soup.find_all('a', class_ = 'lrpstd')
         songs = []
         for song_like_link in song_like_links:
-            title = song_like_link['data-sngname']
-            artist = song_like_link['data-artistname']
-            songs.append(Song(artist, title))
+            songs.append({
+                'title' : song_like_link['data-sngname'],
+                'artist' : song_like_link['data-artistname']
+            })
         logger.info("scouted %s songs at %s", len(songs), self.recent_playlist_url)
         return songs

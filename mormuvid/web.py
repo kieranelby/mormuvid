@@ -1,7 +1,7 @@
 import logging
 import os
 
-from bottle import route, run, debug, static_file, request
+from bottle import route, run, debug, static_file, request, HTTPResponse
 
 import jsonpickle
 
@@ -38,8 +38,7 @@ def api_songs_create():
     title = requestSong['title']
     videoURL = requestSong['videoURL']
     logger.info("adding song %s by %s at %s", title, artist, videoURL)
-    song = Song(artist, title)
-    librarian.notify_song_scouted(song)
+    song = librarian.notify_song_requested(artist, title, videoURL)
     return jsonpickle.encode({'song': song})
 
 @route('/api/songs/<song_id>')
@@ -48,6 +47,14 @@ def api_song(song_id):
     song = librarian.get_song_by_id(song_id)
     if song is not None:
         return jsonpickle.encode({'song': song})
+
+@route('/api/songs/<song_id>', method='DELETE')
+def api_song_delete(song_id):
+    global librarian
+    song = librarian.get_song_by_id(song_id)
+    if song is not None:
+        librarian.delete(song)
+    return HTTPResponse(status=204)
 
 @route('/')
 def root():

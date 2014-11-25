@@ -109,7 +109,7 @@ helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
   var buffer = '', hashTypes, hashContexts, escapeExpression=this.escapeExpression;
 
 
-  data.buffer.push("<h3>Song: ");
+  data.buffer.push("<h3>");
   hashTypes = {};
   hashContexts = {};
   data.buffer.push(escapeExpression(helpers._triageMustache.call(depth0, "artist", {hash:{},contexts:[depth0],types:["ID"],hashContexts:hashContexts,hashTypes:hashTypes,data:data})));
@@ -128,10 +128,67 @@ helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
 Ember.TEMPLATES["song/delete"] = Ember.Handlebars.template(function anonymous(Handlebars,depth0,helpers,partials,data) {
 this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
+  var buffer = '', stack1, stack2, hashTypes, hashContexts, options, escapeExpression=this.escapeExpression, self=this, helperMissing=helpers.helperMissing;
+
+function program1(depth0,data) {
   
+  
+  data.buffer.push("Cancel");
+  }
 
-
-  data.buffer.push("<div class=\"alert alert-warning\" role=\"alert\">\n  <strong>Sorry!</strong> Deleting Songs not implemented yet.\n</div>");
+  data.buffer.push("<div class=\"row\">\n    <div class=\"alert alert-warning\" role=\"alert\">\n        Are you <strong>sure</strong> you want to delete '");
+  hashTypes = {};
+  hashContexts = {};
+  data.buffer.push(escapeExpression(helpers._triageMustache.call(depth0, "title", {hash:{},contexts:[depth0],types:["ID"],hashContexts:hashContexts,hashTypes:hashTypes,data:data})));
+  data.buffer.push("'' by ");
+  hashTypes = {};
+  hashContexts = {};
+  data.buffer.push(escapeExpression(helpers._triageMustache.call(depth0, "artist", {hash:{},contexts:[depth0],types:["ID"],hashContexts:hashContexts,hashTypes:hashTypes,data:data})));
+  data.buffer.push("?\n    </div>\n    <form role=\"form\">\n    <div class=\"control-group\">\n        ");
+  hashContexts = {'class': depth0,'role': depth0};
+  hashTypes = {'class': "STRING",'role': "STRING"};
+  options = {hash:{
+    'class': ("btn btn-default"),
+    'role': ("button")
+  },inverse:self.noop,fn:self.program(1, program1, data),contexts:[depth0],types:["STRING"],hashContexts:hashContexts,hashTypes:hashTypes,data:data};
+  stack2 = ((stack1 = helpers['link-to'] || depth0['link-to']),stack1 ? stack1.call(depth0, "song", options) : helperMissing.call(depth0, "link-to", "song", options));
+  if(stack2 || stack2 === 0) { data.buffer.push(stack2); }
+  data.buffer.push("\n        <button class='btn btn-danger' ");
+  hashTypes = {};
+  hashContexts = {};
+  data.buffer.push(escapeExpression(helpers.action.call(depth0, "deleteSong", "song", {hash:{},contexts:[depth0,depth0],types:["STRING","ID"],hashContexts:hashContexts,hashTypes:hashTypes,data:data})));
+  data.buffer.push(">Really Delete It</button>\n        <br>\n    </div>\n    </form>\n</div>\n\n<div class=\"row\">&nbsp;</div>\n\n<div class=\"row\">\n    <br>\n    <div class=\"panel panel-default\">\n      <div class=\"panel-heading\">\n        <h4 class=\"panel-title\">Advanced Delete Options</h4>\n      </div>\n      <div class=\"panel-body\">\n\n        <form role=\"form\">\n        <div class=\"checkbox\">\n            <label>\n                ");
+  hashContexts = {'type': depth0,'checked': depth0,'id': depth0};
+  hashTypes = {'type': "STRING",'checked': "ID",'id': "STRING"};
+  options = {hash:{
+    'type': ("checkbox"),
+    'checked': ("doNotDownloadSameSong"),
+    'id': ("doNotDownloadSameSong")
+  },contexts:[],types:[],hashContexts:hashContexts,hashTypes:hashTypes,data:data};
+  data.buffer.push(escapeExpression(((stack1 = helpers.input || depth0.input),stack1 ? stack1.call(depth0, options) : helperMissing.call(depth0, "input", options))));
+  data.buffer.push("\n                Never automatically download this song ('");
+  hashTypes = {};
+  hashContexts = {};
+  data.buffer.push(escapeExpression(helpers._triageMustache.call(depth0, "title", {hash:{},contexts:[depth0],types:["ID"],hashContexts:hashContexts,hashTypes:hashTypes,data:data})));
+  data.buffer.push("'' by ");
+  hashTypes = {};
+  hashContexts = {};
+  data.buffer.push(escapeExpression(helpers._triageMustache.call(depth0, "artist", {hash:{},contexts:[depth0],types:["ID"],hashContexts:hashContexts,hashTypes:hashTypes,data:data})));
+  data.buffer.push(") again.\n            </label>\n        </div>\n        <div class=\"checkbox\">\n            <label>\n                ");
+  hashContexts = {'type': depth0,'checked': depth0,'id': depth0};
+  hashTypes = {'type': "STRING",'checked': "ID",'id': "STRING"};
+  options = {hash:{
+    'type': ("checkbox"),
+    'checked': ("doNotDownloadSameArtist"),
+    'id': ("doNotDownloadSameArtist")
+  },contexts:[],types:[],hashContexts:hashContexts,hashTypes:hashTypes,data:data};
+  data.buffer.push(escapeExpression(((stack1 = helpers.input || depth0.input),stack1 ? stack1.call(depth0, options) : helperMissing.call(depth0, "input", options))));
+  data.buffer.push("\n                Never automatically download <strong>any</strong> songs by this artist (");
+  hashTypes = {};
+  hashContexts = {};
+  data.buffer.push(escapeExpression(helpers._triageMustache.call(depth0, "artist", {hash:{},contexts:[depth0],types:["ID"],hashContexts:hashContexts,hashTypes:hashTypes,data:data})));
+  data.buffer.push(") again.\n            </label>\n        </div>\n        </form>\n\n      </div>\n    </div>\n</div>");
+  return buffer;
   
 });
 
@@ -297,7 +354,7 @@ helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
   var buffer = '', stack1, hashContexts, hashTypes, options, helperMissing=helpers.helperMissing, escapeExpression=this.escapeExpression;
 
 
-  data.buffer.push("<h3>New Song</h3>\n<form>\n    <div class=\"form-group\">\n        <label for=\"inputArtist\">Artist</label>\n        ");
+  data.buffer.push("<h3>New Song</h3>\n<form role=\"form\">\n    <div class=\"form-group\">\n        <label for=\"inputArtist\">Artist</label>\n        ");
   hashContexts = {'type': depth0,'value': depth0,'class': depth0,'id': depth0,'placeholder': depth0};
   hashTypes = {'type': "STRING",'value': "ID",'class': "STRING",'id': "STRING",'placeholder': "STRING"};
   options = {hash:{
