@@ -49,7 +49,7 @@ function program7(depth0,data) {
   options = {hash:{
     'tagName': ("li")
   },inverse:self.noop,fn:self.program(5, program5, data),contexts:[depth0],types:["STRING"],hashContexts:hashContexts,hashTypes:hashTypes,data:data};
-  stack2 = ((stack1 = helpers['link-to'] || depth0['link-to']),stack1 ? stack1.call(depth0, "otherVideos", options) : helperMissing.call(depth0, "link-to", "otherVideos", options));
+  stack2 = ((stack1 = helpers['link-to'] || depth0['link-to']),stack1 ? stack1.call(depth0, "videos", options) : helperMissing.call(depth0, "link-to", "videos", options));
   if(stack2 || stack2 === 0) { data.buffer.push(stack2); }
   data.buffer.push("\n                ");
   hashContexts = {'tagName': depth0};
@@ -71,7 +71,7 @@ function program7(depth0,data) {
 Ember.TEMPLATES["index"] = Ember.Handlebars.template(function anonymous(Handlebars,depth0,helpers,partials,data) {
 this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
-  var buffer = '', stack1, stack2, hashContexts, hashTypes, options, self=this, helperMissing=helpers.helperMissing;
+  var buffer = '', stack1, stack2, hashTypes, hashContexts, options, self=this, helperMissing=helpers.helperMissing;
 
 function program1(depth0,data) {
   
@@ -79,13 +79,10 @@ function program1(depth0,data) {
   data.buffer.push("Songs");
   }
 
-  data.buffer.push("<div class=\"jumbotron\">\n    <h1>Welcome to mormuvid!</h1>\n    Perhaps you'd like to look at the ");
-  hashContexts = {'class': depth0,'role': depth0};
-  hashTypes = {'class': "STRING",'role': "STRING"};
-  options = {hash:{
-    'class': ("btn btn-primary"),
-    'role': ("button")
-  },inverse:self.noop,fn:self.program(1, program1, data),contexts:[depth0],types:["STRING"],hashContexts:hashContexts,hashTypes:hashTypes,data:data};
+  data.buffer.push("<div class=\"jumbotron\">\n    <h1>Welcome to mormuvid!</h1>\n    Perhaps you'd like to start with the ");
+  hashTypes = {};
+  hashContexts = {};
+  options = {hash:{},inverse:self.noop,fn:self.program(1, program1, data),contexts:[depth0],types:["STRING"],hashContexts:hashContexts,hashTypes:hashTypes,data:data};
   stack2 = ((stack1 = helpers['link-to'] || depth0['link-to']),stack1 ? stack1.call(depth0, "songs", options) : helperMissing.call(depth0, "link-to", "songs", options));
   if(stack2 || stack2 === 0) { data.buffer.push(stack2); }
   data.buffer.push("?\n</div>\n");
@@ -381,7 +378,7 @@ helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
   hashTypes = {'type': "STRING",'value': "ID",'class': "STRING",'id': "STRING",'placeholder': "STRING"};
   options = {hash:{
     'type': ("text"),
-    'value': ("inputVideoURL"),
+    'value': ("videoURL"),
     'class': ("form-control"),
     'id': ("inputVideoURL"),
     'placeholder': ("e.g. https://www.youtube.com/watch?v=9bZkp7q19f0")
@@ -392,6 +389,53 @@ helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
   hashContexts = {};
   data.buffer.push(escapeExpression(helpers.action.call(depth0, "addSong", {hash:{},contexts:[depth0],types:["STRING"],hashContexts:hashContexts,hashTypes:hashTypes,data:data})));
   data.buffer.push(" class=\"btn btn-primary\">Add Song</button>\n</form>\n");
+  return buffer;
+  
+});
+
+Ember.TEMPLATES["videos"] = Ember.Handlebars.template(function anonymous(Handlebars,depth0,helpers,partials,data) {
+this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
+  var buffer = '', stack1, stack2, hashTypes, hashContexts, options, self=this, helperMissing=helpers.helperMissing, escapeExpression=this.escapeExpression;
+
+function program1(depth0,data) {
+  
+  
+  data.buffer.push("the Songs tab");
+  }
+
+  data.buffer.push("<h3>Download A Video</h3>\n<p>\n(which presumably <i>isn't</i> a music video, since ");
+  hashTypes = {};
+  hashContexts = {};
+  options = {hash:{},inverse:self.noop,fn:self.program(1, program1, data),contexts:[depth0],types:["STRING"],hashContexts:hashContexts,hashTypes:hashTypes,data:data};
+  stack2 = ((stack1 = helpers['link-to'] || depth0['link-to']),stack1 ? stack1.call(depth0, "songs", options) : helperMissing.call(depth0, "link-to", "songs", options));
+  if(stack2 || stack2 === 0) { data.buffer.push(stack2); }
+  data.buffer.push(" is better for those?)\n</p>\n<form role=\"form\">\n    <div class=\"form-group\">\n        <label for=\"inputVideoURL\">Video URL</label>\n        ");
+  hashContexts = {'type': depth0,'value': depth0,'class': depth0,'id': depth0,'placeholder': depth0};
+  hashTypes = {'type': "STRING",'value': "ID",'class': "STRING",'id': "STRING",'placeholder': "STRING"};
+  options = {hash:{
+    'type': ("text"),
+    'value': ("videoURL"),
+    'class': ("form-control"),
+    'id': ("inputVideoURL"),
+    'placeholder': ("e.g. https://www.youtube.com/watch?v=9bZkp7q19f0")
+  },contexts:[],types:[],hashContexts:hashContexts,hashTypes:hashTypes,data:data};
+  data.buffer.push(escapeExpression(((stack1 = helpers.input || depth0.input),stack1 ? stack1.call(depth0, options) : helperMissing.call(depth0, "input", options))));
+  data.buffer.push("\n    </div>\n    <div class=\"form-group\">\n        <label for=\"inputCategory\">Category</label>\n        ");
+  hashContexts = {'id': depth0,'content': depth0,'optionValuePath': depth0,'optionLabelPath': depth0,'value': depth0};
+  hashTypes = {'id': "STRING",'content': "ID",'optionValuePath': "STRING",'optionLabelPath': "STRING",'value': "ID"};
+  data.buffer.push(escapeExpression(helpers.view.call(depth0, "select", {hash:{
+    'id': ("inputCategory"),
+    'content': ("availableCategories"),
+    'optionValuePath': ("content.id"),
+    'optionLabelPath': ("content.name"),
+    'value': ("categoryId")
+  },contexts:[depth0],types:["STRING"],hashContexts:hashContexts,hashTypes:hashTypes,data:data})));
+  data.buffer.push("\n    </div>\n    <button class=\"btn\" onclick=\"window.history.back()\">Cancel</button>\n    <button ");
+  hashTypes = {};
+  hashContexts = {};
+  data.buffer.push(escapeExpression(helpers.action.call(depth0, "downloadVideo", {hash:{},contexts:[depth0],types:["STRING"],hashContexts:hashContexts,hashTypes:hashTypes,data:data})));
+  data.buffer.push(" class=\"btn btn-primary\">Download Video</button>\n</form>\n");
   return buffer;
   
 });

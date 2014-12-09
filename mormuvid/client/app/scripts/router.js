@@ -6,6 +6,6 @@ Client.Router.map(function () {
             this.route('delete');
         });
     });
-    this.resource('otherVideos');
+    this.resource('videos');
     this.resource('settings');
 });

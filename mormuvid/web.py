@@ -56,6 +56,10 @@ def api_song_delete(song_id):
         librarian.delete(song)
     return HTTPResponse(status=204)
 
+@route('/api/videos', method='POST')
+def api_videos_create():
+    raise Exception("TODO - not implemented")
+
 @route('/')
 def root():
     return other_path('index.html')

@@ -77,6 +77,50 @@ Client.SongsNewController = Ember.ObjectController.extend({
 
 (function() {
 
+Client.VideosController = Ember.ObjectController.extend({
+
+  colours: ["red","yellow","blue"],
+  currentColour: "red",
+
+  availableCategories: [
+    {name: "Documentary", id: "Documentaries"},
+    {name: "Exercise", id: "Exercise"},
+    {name: "Karaoke", id: "Karaoke"},
+    {name: "Movie", id: "Movies"},
+    {name: "TV Show", id: "TVShows"},
+    {name: "Other", id: "Other"}
+  ],
+
+  categoryId: "Other",
+  videoURL: null,
+
+  actions: {
+    downloadVideo: function () {
+
+        var category = this.get('categoryId');
+        var videoURL = this.get('videoURL');
+
+        // TODO - validate
+
+        var video = this.store.createRecord('video', {
+            category: category,
+            videoURL: videoURL
+        });
+
+        // Save the new model
+        video.save();
+
+        // TODO - go somewhere
+    }
+  }
+
+});
+
+
+})();
+
+(function() {
+
 Client.ApplicationAdapter = DS.RESTAdapter.extend({
     namespace: 'api',
 });
@@ -89,6 +133,16 @@ Client.Song = DS.Model.extend({
     artist: DS.attr('string'),
     title: DS.attr('string'),
     status: DS.attr('string'),
+    videoURL: DS.attr('string')
+});
+
+
+})();
+
+(function() {
+
+Client.Video = DS.Model.extend({
+    category: DS.attr('string'),
     videoURL: DS.attr('string')
 });
 
@@ -158,7 +212,7 @@ Client.Router.map(function () {
             this.route('delete');
         });
     });
-    this.resource('otherVideos');
+    this.resource('videos');
     this.resource('settings');
 });
 
