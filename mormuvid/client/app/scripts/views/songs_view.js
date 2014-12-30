@@ -1,2 +1,2 @@
-Client.SongsView = Ember.View.extend({
+App.SongsView = Ember.View.extend({
 });

@@ -28,16 +28,24 @@ class Librarian:
     def __init__(self):
         self.num_queued = 0
 
-    def _get_videos_dir(self):
+    def _get_songs_dir(self):
         home = path.expanduser("~")
-        videos_dir = path.join(home, "Videos", "MusicVideos")
-        if not path.isdir(videos_dir):
-            logger.info("creating new videos_dir at %s", videos_dir)
-            makedirs(videos_dir)
-        return videos_dir 
+        songs_dir = path.join(home, "Videos", "MusicVideos")
+        if not path.isdir(songs_dir):
+            logger.info("creating new songs_dir at %s", songs_dir)
+            makedirs(songs_dir)
+        return songs_dir 
+
+    def get_others_dir(self):
+        home = path.expanduser("~")
+        others_dir = path.join(home, "Videos", "Others")
+        if not path.isdir(others_dir):
+            logger.info("creating new others_dir at %s", others_dir)
+            makedirs(others_dir)
+        return others_dir
 
     def get_base_filepath(self, song):
-        return path.join(self._get_videos_dir(), song.get_base_file_name_wo_ext())
+        return path.join(self._get_songs_dir(), song.get_base_file_name_wo_ext())
 
     def _is_download_wanted(self, possible_new_song):
         if self._too_many_songs_queued():
@@ -65,7 +73,7 @@ class Librarian:
                 os.remove(filepath)
 
     def get_songs(self):
-        videos_dir = self._get_videos_dir()
+        videos_dir = self._get_songs_dir()
         songs = []
         for nfo_filepath in glob.iglob(path.join(videos_dir,'*.nfo')):
             song = self._read_nfo_file(nfo_filepath)
@@ -127,7 +135,7 @@ class Librarian:
         logger.info("queueing download of {}".format(song))
         song.mark_found(video_watch_url)
         self._notify_download_queued(song)
-        self._get_downloader().download(song)
+        self._get_downloader().download_song(song)
         return
 
     def notify_song_not_found(self, song):
@@ -159,6 +167,13 @@ class Librarian:
         self._delete_lock_file(song)
         self._write_nfo_file(song)
         return
+
+    def request_other_video(self, video_url):
+        video = {
+            'videoURL': video_url
+        }
+        self._get_downloader().download_other_video(video)
+        return video
 
     def _remove_path_and_ext(self, filepath):
         return os.path.splitext(os.path.basename(filepath))[0]
@@ -218,11 +233,11 @@ class Librarian:
 
     def _clean_up_lock_files(self):
         logger.info("cleaning up lock files")
-        videos_dir = self._get_videos_dir()
+        videos_dir = self._get_songs_dir()
         for lock_filepath in glob.iglob(path.join(videos_dir,'*.lock')):
             # will clean up stale ones as a side-effect
             song = self._read_lock_file(lock_filepath)
 
     def start(self):
-        logger.info("videos_dir is %s", self._get_videos_dir())
+        logger.info("videos_dir is %s", self._get_songs_dir())
         self._clean_up_lock_files()

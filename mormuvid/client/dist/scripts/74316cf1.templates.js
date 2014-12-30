@@ -68,6 +68,56 @@ function program7(depth0,data) {
   
 });
 
+Ember.TEMPLATES["components/x-woof-message"] = Ember.Handlebars.template(function anonymous(Handlebars,depth0,helpers,partials,data) {
+this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
+  var buffer = '', stack1, hashContexts, hashTypes, options, helperMissing=helpers.helperMissing, escapeExpression=this.escapeExpression;
+
+
+  data.buffer.push("<div ");
+  hashContexts = {'class': depth0};
+  hashTypes = {'class': "STRING"};
+  options = {hash:{
+    'class': (":woof-message :alert :alert-dismissable message.typeClass")
+  },contexts:[],types:[],hashContexts:hashContexts,hashTypes:hashTypes,data:data};
+  data.buffer.push(escapeExpression(((stack1 = helpers['bind-attr'] || depth0['bind-attr']),stack1 ? stack1.call(depth0, options) : helperMissing.call(depth0, "bind-attr", options))));
+  data.buffer.push(">\n  <button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-hidden=\"true\">&times;</button>\n  ");
+  hashTypes = {};
+  hashContexts = {};
+  data.buffer.push(escapeExpression(helpers._triageMustache.call(depth0, "message.message", {hash:{},contexts:[depth0],types:["ID"],hashContexts:hashContexts,hashTypes:hashTypes,data:data})));
+  data.buffer.push("\n</div>\n");
+  return buffer;
+  
+});
+
+Ember.TEMPLATES["components/x-woof"] = Ember.Handlebars.template(function anonymous(Handlebars,depth0,helpers,partials,data) {
+this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
+  var buffer = '', stack1, hashTypes, hashContexts, helperMissing=helpers.helperMissing, escapeExpression=this.escapeExpression, self=this;
+
+function program1(depth0,data) {
+  
+  var buffer = '', stack1, hashContexts, hashTypes, options;
+  data.buffer.push("\n  ");
+  hashContexts = {'message': depth0};
+  hashTypes = {'message': "ID"};
+  options = {hash:{
+    'message': ("")
+  },contexts:[],types:[],hashContexts:hashContexts,hashTypes:hashTypes,data:data};
+  data.buffer.push(escapeExpression(((stack1 = helpers['x-woof-message'] || depth0['x-woof-message']),stack1 ? stack1.call(depth0, options) : helperMissing.call(depth0, "x-woof-message", options))));
+  data.buffer.push("\n");
+  return buffer;
+  }
+
+  hashTypes = {};
+  hashContexts = {};
+  stack1 = helpers.each.call(depth0, "messages", {hash:{},inverse:self.noop,fn:self.program(1, program1, data),contexts:[depth0],types:["ID"],hashContexts:hashContexts,hashTypes:hashTypes,data:data});
+  if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
+  data.buffer.push("\n");
+  return buffer;
+  
+});
+
 Ember.TEMPLATES["index"] = Ember.Handlebars.template(function anonymous(Handlebars,depth0,helpers,partials,data) {
 this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
@@ -290,7 +340,7 @@ function program1(depth0,data) {
 
 function program3(depth0,data) {
   
-  var buffer = '', stack1, stack2, hashTypes, hashContexts, options;
+  var buffer = '', hashTypes, hashContexts;
   data.buffer.push("\n        <tr ");
   hashTypes = {};
   hashContexts = {};
@@ -298,32 +348,13 @@ function program3(depth0,data) {
   data.buffer.push(">\n            <td>");
   hashTypes = {};
   hashContexts = {};
-  options = {hash:{},inverse:self.noop,fn:self.program(4, program4, data),contexts:[depth0,depth0],types:["STRING","ID"],hashContexts:hashContexts,hashTypes:hashTypes,data:data};
-  stack2 = ((stack1 = helpers['link-to'] || depth0['link-to']),stack1 ? stack1.call(depth0, "song", "", options) : helperMissing.call(depth0, "link-to", "song", "", options));
-  if(stack2 || stack2 === 0) { data.buffer.push(stack2); }
+  data.buffer.push(escapeExpression(helpers._triageMustache.call(depth0, "artist", {hash:{},contexts:[depth0],types:["ID"],hashContexts:hashContexts,hashTypes:hashTypes,data:data})));
   data.buffer.push("</td>\n            <td>");
   hashTypes = {};
   hashContexts = {};
-  options = {hash:{},inverse:self.noop,fn:self.program(6, program6, data),contexts:[depth0,depth0],types:["STRING","ID"],hashContexts:hashContexts,hashTypes:hashTypes,data:data};
-  stack2 = ((stack1 = helpers['link-to'] || depth0['link-to']),stack1 ? stack1.call(depth0, "song", "", options) : helperMissing.call(depth0, "link-to", "song", "", options));
-  if(stack2 || stack2 === 0) { data.buffer.push(stack2); }
+  data.buffer.push(escapeExpression(helpers._triageMustache.call(depth0, "title", {hash:{},contexts:[depth0],types:["ID"],hashContexts:hashContexts,hashTypes:hashTypes,data:data})));
   data.buffer.push("</td>\n        </tr>\n        ");
   return buffer;
-  }
-function program4(depth0,data) {
-  
-  var hashTypes, hashContexts;
-  hashTypes = {};
-  hashContexts = {};
-  data.buffer.push(escapeExpression(helpers._triageMustache.call(depth0, "artist", {hash:{},contexts:[depth0],types:["ID"],hashContexts:hashContexts,hashTypes:hashTypes,data:data})));
-  }
-
-function program6(depth0,data) {
-  
-  var hashTypes, hashContexts;
-  hashTypes = {};
-  hashContexts = {};
-  data.buffer.push(escapeExpression(helpers._triageMustache.call(depth0, "title", {hash:{},contexts:[depth0],types:["ID"],hashContexts:hashContexts,hashTypes:hashTypes,data:data})));
   }
 
   data.buffer.push("<p>\n    ");
@@ -384,7 +415,11 @@ helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
     'placeholder': ("e.g. https://www.youtube.com/watch?v=9bZkp7q19f0")
   },contexts:[],types:[],hashContexts:hashContexts,hashTypes:hashTypes,data:data};
   data.buffer.push(escapeExpression(((stack1 = helpers.input || depth0.input),stack1 ? stack1.call(depth0, options) : helperMissing.call(depth0, "input", options))));
-  data.buffer.push("\n    </div>\n    <button class=\"btn\" onclick=\"window.history.back()\">Cancel</button>\n    <button ");
+  data.buffer.push("\n    </div>\n    ");
+  hashTypes = {};
+  hashContexts = {};
+  data.buffer.push(escapeExpression(helpers._triageMustache.call(depth0, "x-woof", {hash:{},contexts:[depth0],types:["ID"],hashContexts:hashContexts,hashTypes:hashTypes,data:data})));
+  data.buffer.push("\n    <button class=\"btn\" onclick=\"window.history.back()\">Cancel</button>\n    <button ");
   hashTypes = {};
   hashContexts = {};
   data.buffer.push(escapeExpression(helpers.action.call(depth0, "addSong", {hash:{},contexts:[depth0],types:["STRING"],hashContexts:hashContexts,hashTypes:hashTypes,data:data})));
@@ -421,17 +456,11 @@ function program1(depth0,data) {
     'placeholder': ("e.g. https://www.youtube.com/watch?v=9bZkp7q19f0")
   },contexts:[],types:[],hashContexts:hashContexts,hashTypes:hashTypes,data:data};
   data.buffer.push(escapeExpression(((stack1 = helpers.input || depth0.input),stack1 ? stack1.call(depth0, options) : helperMissing.call(depth0, "input", options))));
-  data.buffer.push("\n    </div>\n    <div class=\"form-group\">\n        <label for=\"inputCategory\">Category</label>\n        ");
-  hashContexts = {'id': depth0,'content': depth0,'optionValuePath': depth0,'optionLabelPath': depth0,'value': depth0};
-  hashTypes = {'id': "STRING",'content': "ID",'optionValuePath': "STRING",'optionLabelPath': "STRING",'value': "ID"};
-  data.buffer.push(escapeExpression(helpers.view.call(depth0, "select", {hash:{
-    'id': ("inputCategory"),
-    'content': ("availableCategories"),
-    'optionValuePath': ("content.id"),
-    'optionLabelPath': ("content.name"),
-    'value': ("categoryId")
-  },contexts:[depth0],types:["STRING"],hashContexts:hashContexts,hashTypes:hashTypes,data:data})));
-  data.buffer.push("\n    </div>\n    <button class=\"btn\" onclick=\"window.history.back()\">Cancel</button>\n    <button ");
+  data.buffer.push("\n    </div>\n    ");
+  hashTypes = {};
+  hashContexts = {};
+  data.buffer.push(escapeExpression(helpers._triageMustache.call(depth0, "x-woof", {hash:{},contexts:[depth0],types:["ID"],hashContexts:hashContexts,hashTypes:hashTypes,data:data})));
+  data.buffer.push("\n    <button class=\"btn\" onclick=\"window.history.back()\">Cancel</button>\n    <button ");
   hashTypes = {};
   hashContexts = {};
   data.buffer.push(escapeExpression(helpers.action.call(depth0, "downloadVideo", {hash:{},contexts:[depth0],types:["STRING"],hashContexts:hashContexts,hashTypes:hashTypes,data:data})));

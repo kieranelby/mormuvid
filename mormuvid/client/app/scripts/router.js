@@ -1,4 +1,4 @@
-Client.Router.map(function () {
+App.Router.map(function () {
     this.resource('songs', function() {
         this.route('new');
         this.resource('song', { path: '/:song_id' }, function() {

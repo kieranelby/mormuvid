@@ -1,7 +1,7 @@
-Client.SongsController = Ember.ObjectController.extend({
+App.SongsController = Ember.ObjectController.extend({
 });
 
-Client.SongsIndexController = Ember.ArrayController.extend({
+App.SongsIndexController = Ember.ArrayController.extend({
   sortProperties: ['artist', 'title'],
   sortAscending: true,
   actions: {
@@ -11,7 +11,7 @@ Client.SongsIndexController = Ember.ArrayController.extend({
   }
 });
 
-Client.SongsNewController = Ember.ObjectController.extend({
+App.SongsNewController = Ember.ObjectController.extend({
   artist: null,
   title: null,
   videoURL: null,
@@ -34,7 +34,11 @@ Client.SongsNewController = Ember.ObjectController.extend({
         // Save the new model
         song.save();
 
-        // TODO - go somewhere
+        this.set('artist', '');
+        this.set('title', '');
+        this.set('videoURL', '');
+
+        this.woof.success("'" + title + "' has been queued for download.");
     }
   }
 });

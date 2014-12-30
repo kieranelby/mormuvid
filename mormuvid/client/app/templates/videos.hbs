@@ -7,14 +7,7 @@
         <label for="inputVideoURL">Video URL</label>
         {{input type="text" value=videoURL class="form-control" id="inputVideoURL" placeholder="e.g. https://www.youtube.com/watch?v=9bZkp7q19f0"}}
     </div>
-    <div class="form-group">
-        <label for="inputCategory">Category</label>
-        {{view "select" id="inputCategory"
-           content=availableCategories
-           optionValuePath="content.id"
-           optionLabelPath="content.name"
-           value=categoryId}}
-    </div>
+    {{x-woof}}
     <button class="btn" onclick="window.history.back()">Cancel</button>
     <button {{action "downloadVideo"}} class="btn btn-primary">Download Video</button>
 </form>

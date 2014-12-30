@@ -1,4 +1,3 @@
-Client.Video = DS.Model.extend({
-    category: DS.attr('string'),
+App.Video = DS.Model.extend({
     videoURL: DS.attr('string')
 });

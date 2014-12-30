@@ -1,3 +1,3 @@
-Client.ApplicationAdapter = DS.RESTAdapter.extend({
+App.ApplicationAdapter = DS.RESTAdapter.extend({
     namespace: 'api',
 });

@@ -12,8 +12,8 @@
     <tbody>
         {{#each controller.arrangedContent}}
         <tr {{action 'clickSong' this}}>
-            <td>{{#link-to 'song' this}}{{this.artist}}{{/link-to}}</td>
-            <td>{{#link-to 'song' this}}{{this.title}}{{/link-to}}</td>
+            <td>{{this.artist}}</td>
+            <td>{{this.title}}</td>
         </tr>
         {{/each}}
     </tbody>

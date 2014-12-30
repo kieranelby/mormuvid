@@ -58,7 +58,12 @@ def api_song_delete(song_id):
 
 @route('/api/videos', method='POST')
 def api_videos_create():
-    raise Exception("TODO - not implemented")
+    global librarian
+    requestVideo = request.json['video']
+    videoURL = requestVideo['videoURL']
+    logger.info("adding other video %s", videoURL)
+    video = librarian.request_other_video(videoURL)
+    return jsonpickle.encode({'video': video})
 
 @route('/')
 def root():

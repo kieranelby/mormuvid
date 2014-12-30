@@ -1,2 +1,2 @@
-Client.LoadingRoute = Ember.Route.extend({
+App.LoadingRoute = Ember.Route.extend({
 });

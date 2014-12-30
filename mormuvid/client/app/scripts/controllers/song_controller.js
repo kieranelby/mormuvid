@@ -1,7 +1,7 @@
-Client.SongController = Ember.ObjectController.extend({
+App.SongController = Ember.ObjectController.extend({
 });
 
-Client.SongDeleteController = Ember.ObjectController.extend({
+App.SongDeleteController = Ember.ObjectController.extend({
   doNotDownloadSameSong: true,
   doNotDownloadSameArtist: false,
   actions: {
