@@ -25,8 +25,9 @@ class Librarian:
     It writes .lock files for songs that are in progress / failed / banned.
     """
 
-    def __init__(self):
+    def __init__(self, scouted_daily_quota):
         self.num_queued = 0
+        self.scouted_daily_quota = scouted_daily_quota
 
     def _get_songs_dir(self):
         home = path.expanduser("~")
@@ -51,12 +52,15 @@ class Librarian:
         if self._too_many_songs_queued():
             logger.info("don't want song %s right now since too many songs already queued up", possible_new_song)
             return False
-        persisted_song = self.retrieve(possible_new_song)
-        if persisted_song is None:
+        # TODO - fuzzier matching to prevent duplicates;
+        # this will only find an existing song with exactly
+        # the same artist and title. Also want artist bans.
+        existing_song = self.retrieve(possible_new_song)
+        if existing_song is None:
             logger.info("want song %s since have no record of it", possible_new_song)
             return True
         else:
-            return persisted_song.is_download_wanted()
+            return False
 
     def get_song_by_id(self, song_id):
         songs = self.get_songs()

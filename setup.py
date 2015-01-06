@@ -108,7 +108,8 @@ setup(
         'subprocess32>=3.2.6',
         'cherrypy>=3.3.0',
         'bottle>=0.12.7',
-        'jsonpickle>=0.8.0'
+        'jsonpickle>=0.8.0',
+        'appdirs>=1.4.0'
     ],
 
     # TODO - explain
