@@ -25,9 +25,11 @@ class Librarian:
     It writes .lock files for songs that are in progress / failed / banned.
     """
 
+    max_queued_songs = 5
+
     def __init__(self, scouted_daily_quota):
-        self.num_queued = 0
         self.scouted_daily_quota = scouted_daily_quota
+        self.cached_songs = None
 
     def _get_songs_dir(self):
         home = path.expanduser("~")
@@ -52,6 +54,9 @@ class Librarian:
         if self._too_many_songs_queued():
             logger.info("don't want song %s right now since too many songs already queued up", possible_new_song)
             return False
+        if self._daily_quota_reached():
+            logger.info("don't want song %s right now since reached daily quota", possible_new_song)
+            return False
         # TODO - fuzzier matching to prevent duplicates;
         # this will only find an existing song with exactly
         # the same artist and title. Also want artist bans.
@@ -75,19 +80,34 @@ class Librarian:
             if (os.path.splitext(filepath)[0] == base_filepath_wo_ext):
                 logger.info("deleting file %s which belonged to song %s", filepath, song)
                 os.remove(filepath)
+        self.songs_cache_delete(song)
 
     def get_songs(self):
+        if self.cached_songs is None:
+            self.songs_cache_refresh()
+        return self.cached_songs.values()
+
+    def songs_cache_refresh(self):
         videos_dir = self._get_songs_dir()
-        songs = []
+        self.cached_songs = {}
         for nfo_filepath in glob.iglob(path.join(videos_dir,'*.nfo')):
-            song = self._read_nfo_file(nfo_filepath)
-            if song is not None:
-                songs.append(song)
+            self._read_nfo_file(nfo_filepath)
         for lock_filepath in glob.iglob(path.join(videos_dir,'*.lock')):
-            song = self._read_lock_file(lock_filepath)
-            if song is not None:
-                songs.append(song)
-        return songs
+            self._read_lock_file(lock_filepath)
+
+    def songs_cache_put(self, song):
+        if self.cached_songs is None:
+            return
+        self.cached_songs[song.id] = song
+        logger.info("updated song %s in song cache", song)
+
+    def songs_cache_delete(self, song):
+        try:
+            del self.cached_songs[song.id]
+        except Exception as e:
+            logger.info("failed to delete song %s from song cache due to %s", song, e)
+            pass
+        logger.info("removed song %s from song cache", song)
 
     def retrieve(self, song):
         nfo_filepath = self._get_nfo_filepath(song)
@@ -119,8 +139,8 @@ class Librarian:
             self.notify_song_found(song, video_watch_url)
         return song
 
-    def notify_song_scouted(self, artist, title):
-        song = Song(artist, title)
+    def notify_song_scouted(self, artist, title, scouted_by):
+        song = Song(artist, title, scouted_by=scouted_by)
         wanted = self._is_download_wanted(song)
         if wanted:
             self._notify_find_queued(song)
@@ -130,7 +150,6 @@ class Librarian:
         return
 
     def _notify_find_queued(self, song):
-        self.num_queued += 1
         song.mark_find_queued()
         self._write_lock_file(song)
         return
@@ -143,30 +162,25 @@ class Librarian:
         return
 
     def notify_song_not_found(self, song):
-        self.num_queued -= 1
         song.mark_failed()
         self._write_lock_file(song)
         return
 
     def _notify_download_queued(self, song):
-        # hack: assume song was already included in num_queued
         song.mark_download_queued()
         self._write_lock_file(song)
         return
 
     def notify_download_failed(self, song):
-        self.num_queued -= 1
         song.mark_failed()
         self._write_lock_file(song)
         return
 
     def notify_download_cancelled(self, song):
-        self.num_queued -= 1
         self._delete_lock_file(song)
         return
 
     def notify_download_completed(self, song):
-        self.num_queued -= 1
         song.mark_downloaded()
         self._delete_lock_file(song)
         self._write_nfo_file(song)
@@ -188,6 +202,7 @@ class Librarian:
     def _write_nfo_file(self, song):
         nfo_filepath = self._get_nfo_filepath(song)
         nfo_xml = song.to_nfo_xml()
+        self.songs_cache_put(song)
         with codecs.open(nfo_filepath, 'w', 'utf-8') as f:
             f.write(nfo_xml)
         return
@@ -197,11 +212,12 @@ class Librarian:
         try:
             with codecs.open(nfo_filepath, 'r', encoding='utf-8') as f:
                 xml_content = f.read()
-            return Song.from_nfo_xml(xml_content, self._remove_path_and_ext(nfo_filepath))
+            song = Song.from_nfo_xml(xml_content, self._remove_path_and_ext(nfo_filepath))
+            self.songs_cache_put(song)
+            return song
         except:
             logger.info("failed to read nfo_file %s", nfo_filepath)
             return None
-
 
     def _get_lock_filepath(self, song):
         return self.get_base_filepath(song) + '.lock'
@@ -209,6 +225,7 @@ class Librarian:
     def _write_lock_file(self, song):
         lock_filepath = self._get_lock_filepath(song)
         nfo_xml = song.to_nfo_xml()
+        self.songs_cache_put(song)
         with codecs.open(lock_filepath, 'w', 'utf-8') as f:
             f.write(nfo_xml)
         return
@@ -224,8 +241,10 @@ class Librarian:
             return None
         if song.is_stale():
             logger.info("removing lock file for stale song %s (status %s)", song, song.status)
+            self.songs_cache_delete(song)
             os.remove(lock_filepath)
             return None
+        self.songs_cache_put(song)
         return song
 
     def _delete_lock_file(self, song):
@@ -233,7 +252,23 @@ class Librarian:
         os.remove(lock_filepath)
 
     def _too_many_songs_queued(self):
-        return self.num_queued >= 5
+        songs = self.get_songs()
+        queued_songs = [song for song in songs if song.is_queued()]
+        return len(queued_songs) > self.max_queued_songs
+
+    def _daily_quota_reached(self):
+        songs = self.get_songs()
+        seconds_in_a_day = 24 * 60 * 60
+        cutoff_time = time() - seconds_in_a_day
+        scouted_songs_downloaded_today = \
+          [song for song in songs if
+             song.status == "COMPLETED" and
+             song.scouted_by is not None and
+             song.updated_at > cutoff_time]
+        num_scouted_songs_downloaded_today = len(scouted_songs_downloaded_today)
+        logger.info("have downloaded %s scouted songs in last 24 hours vs quota of %s",
+          num_scouted_songs_downloaded_today, self.scouted_daily_quota)
+        return num_scouted_songs_downloaded_today > self.scouted_daily_quota
 
     def _clean_up_lock_files(self):
         logger.info("cleaning up lock files")

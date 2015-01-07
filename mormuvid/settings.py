@@ -60,7 +60,7 @@ def _create_tables_if_needed(db):
         cursor.execute('''
             CREATE TABLE IF NOT EXISTS settings (
                 id INTEGER NOT NULL PRIMARY KEY,
-                scouted_daily_quota INTEGER NOT NULL DEFAULT 20
+                scouted_daily_quota INTEGER NOT NULL DEFAULT 12
             )
         ''')
         cursor.execute('''

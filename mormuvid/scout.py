@@ -24,6 +24,8 @@ class ScoutActor(pykka.ThreadingActor):
     recent_playlist_url = "http://www.1.fm/home/stationplaylist?id=top40"
     scrape_interval_seconds = 30
 
+    SCOUTED_BY_NAME = "1.FM"
+
     def __init__(self, librarian):
         super(ScoutActor, self).__init__()
         self.proxy = self.actor_ref.proxy()
@@ -63,7 +65,7 @@ class ScoutActor(pykka.ThreadingActor):
             logger.exception("unable to scrape songs")
             songs = []
         for song in songs:
-            self.librarian.notify_song_scouted(song['artist'], song['title'])
+            self.librarian.notify_song_scouted(song['artist'], song['title'], self.SCOUTED_BY_NAME)
         self._schedule_scout_songs_and_repeat(last_scrape_at)
 
     def get_songs(self):

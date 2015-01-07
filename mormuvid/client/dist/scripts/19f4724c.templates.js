@@ -126,16 +126,28 @@ helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
 function program1(depth0,data) {
   
   
-  data.buffer.push("Songs");
+  data.buffer.push("songs");
   }
 
-  data.buffer.push("<div class=\"jumbotron\">\n    <h1>Welcome to mormuvid!</h1>\n    Perhaps you'd like to start with the ");
+function program3(depth0,data) {
+  
+  
+  data.buffer.push("other videos");
+  }
+
+  data.buffer.push("<div class=\"jumbotron\">\n    <h1>Welcome to mormuvid</h1>\n    <p>... bringing you <b>mor</b>e <b>mu</b>sic and more <b>vid</b>eos!</p>\n    <p>Perhaps you'd like to start with the ");
   hashTypes = {};
   hashContexts = {};
   options = {hash:{},inverse:self.noop,fn:self.program(1, program1, data),contexts:[depth0],types:["STRING"],hashContexts:hashContexts,hashTypes:hashTypes,data:data};
   stack2 = ((stack1 = helpers['link-to'] || depth0['link-to']),stack1 ? stack1.call(depth0, "songs", options) : helperMissing.call(depth0, "link-to", "songs", options));
   if(stack2 || stack2 === 0) { data.buffer.push(stack2); }
-  data.buffer.push("?\n</div>\n");
+  data.buffer.push("? Or download some ");
+  hashTypes = {};
+  hashContexts = {};
+  options = {hash:{},inverse:self.noop,fn:self.program(3, program3, data),contexts:[depth0],types:["STRING"],hashContexts:hashContexts,hashTypes:hashTypes,data:data};
+  stack2 = ((stack1 = helpers['link-to'] || depth0['link-to']),stack1 ? stack1.call(depth0, "videos", options) : helperMissing.call(depth0, "link-to", "videos", options));
+  if(stack2 || stack2 === 0) { data.buffer.push(stack2); }
+  data.buffer.push("?</p>\n</div>\n");
   return buffer;
   
 });

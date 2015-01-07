@@ -1,9 +1,12 @@
+import logging
 import re
 
 from time import time
 
 from jinja2 import Environment
 from bs4 import BeautifulSoup
+
+logger = logging.getLogger(__name__)
 
 nfo_template_str = """<musicvideo>
   <title>{{song.title}}</title>
@@ -18,15 +21,14 @@ nfo_template_str = """<musicvideo>
   <mormuvid>
      <status>{{song.status}}</status>
      <updated_at>{{song.updated_at}}</updated_at>
-     <video_watch_url>{{song.video_watch_url}}</video_watch_url>
+     <video_watch_url>{{song.video_watch_url or ''}}</video_watch_url>
+     <scouted_by>{{song.scouted_by or ''}}</scouted_by>
   </mormuvid>
 </musicvideo>
 """
 
 def _make_id(artist, title):
     raw_name = artist + " - " + title
-    # TODO: obviously, this won't work at all well with non-latin-alphabet song names ...
-    # Perhaps use idna / punycode ?
     ascii_name = raw_name.encode('punycode')
     safe_name = re.sub(r"[^0-9A-Za-z .,;()_\-]", "_", ascii_name)
     return safe_name
@@ -35,7 +37,7 @@ class Song(object):
     """
     Represents a song.
     """
-    def __init__(self, artist, title, song_id=None):
+    def __init__(self, artist, title, song_id=None, scouted_by=None):
         self.status = 'SCOUTED'
         self.artist = artist
         # make album name up for now
@@ -45,8 +47,9 @@ class Song(object):
             self.id = _make_id(artist,title);
         else:
             self.id = song_id
-        self.mark_updated()
         self.video_watch_url = None
+        self.scouted_by = scouted_by
+        self.mark_updated()
 
     def mark_updated(self):
         self.updated_at = time()
@@ -71,6 +74,9 @@ class Song(object):
     def mark_downloaded(self):
         self.status = 'COMPLETED'
         self.mark_updated()
+
+    def is_queued(self):
+        return self.status in ['FIND_QUEUED', 'DOWNLOAD_QUEUED']
 
     def get_base_file_name_wo_ext(self):
         return self.id
@@ -124,8 +130,14 @@ class Song(object):
             song.status = 'COMPLETED'
             song.updated_at = None
             song.video_watch_url = None
+            song.scouted_by = None
         else:
             song.status = mormuvid_info.status.string.strip()
             song.updated_at = float(mormuvid_info.updated_at.string.strip())
             song.video_watch_url = mormuvid_info.video_watch_url.string.strip()
+            try:
+                song.scouted_by = mormuvid_info.scouted_by.string.strip()
+            except:
+                song.scouted_by = None
+
         return song
