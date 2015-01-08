@@ -1,11 +1,13 @@
 import logging
 import os
 
-from bottle import route, run, debug, static_file, request, HTTPResponse
+from bottle import route, run, debug, static_file, request, HTTPResponse, abort
 
 import jsonpickle
 
 from mormuvid.song import Song
+from mormuvid.settings import get_settings
+from mormuvid.settings import update_settings
 
 logger = logging.getLogger(__name__)
 librarian = None
@@ -65,6 +67,20 @@ def api_videos_create():
     video = librarian.request_other_video(videoURL)
     return jsonpickle.encode({'video': video})
 
+@route('/api/settings/<dummy_id>', method='GET')
+def api_settings_get(dummy_id):
+    settings = get_settings()
+    return jsonpickle.encode({'settings': settings})
+
+@route('/api/settings/<dummy_id>', method='PUT')
+def api_settings_put(dummy_id):
+    settings_from_request = request.json['settings']
+    try:
+        update_settings(settings_from_request)
+    except:
+        render_json_error_response("failed to save settings")
+    return api_settings_get(dummy_id)
+
 @route('/')
 def root():
     return other_path('index.html')
@@ -73,3 +89,11 @@ def root():
 def other_path(other_path):
     logger.info("playing static file %s from %s", other_path, _STATIC_PATH)
     return static_file(other_path, root=_STATIC_PATH)
+
+def render_json_error_response(err_msg):
+    errors = {
+      "errors": {
+         "unknown": [ err_msg ]
+        }
+    }
+    raise HTTPResponse(body=jsonpickle.encode(errors), status=422)

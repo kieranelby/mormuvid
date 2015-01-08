@@ -11,7 +11,7 @@ from mormuvid.finder import FinderActor
 from mormuvid.scout import ScoutActor
 from mormuvid.web import start_web_and_block
 from mormuvid.web import stop_web
-from mormuvid.settings import get_scouted_daily_quota
+from mormuvid.settings import get_settings
 
 logger = logging.getLogger(__name__)
 
@@ -40,8 +40,8 @@ class App:
         logger.info("starting up ...")
         _hook_signals()
         _register_app(self)
-        scouted_daily_quota = get_scouted_daily_quota()
-        librarian = Librarian(scouted_daily_quota)
+        settings = get_settings()
+        librarian = Librarian(settings['scoutedDailyQuota'])
         librarian.start()
         DownloaderActor.start(librarian)
         FinderActor.start(librarian)

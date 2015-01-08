@@ -7,27 +7,43 @@ APPNAME = 'mormuvid'
 DB_FILENAME = 'settingsdb'
 
 logger = logging.getLogger(__name__)
+DUMMY_ID = 1
 
-def get_scouted_daily_quota():
+def get_settings():
     db = _get_db()
     try:
         cursor = db.cursor()
         cursor.execute('''
-            SELECT scouted_daily_quota FROM settings
+            SELECT
+              id,
+              scouted_daily_quota
+            FROM
+              settings
         ''')
         row = cursor.fetchone()
-        return row[0]
+        settings = {
+            'id' : row[0],
+            'scoutedDailyQuota' : row[1]
+        }
+        return settings
     finally:
         db.close()
 
-def set_scouted_daily_quota(scouted_daily_quota):
+def update_settings(settings):
+    global DUMMY_ID
     db = _get_db()
+    logger.info("updating settings to %s", settings)
     try:
         cursor = db.cursor()
         cursor.execute('''
-            UPDATE settings SET scouted_daily_quota = ?
-        ''', (scouted_daily_quota,))
+            UPDATE settings
+            SET
+              scouted_daily_quota = ?
+            WHERE
+              id = ?
+        ''', (settings['scoutedDailyQuota'],DUMMY_ID))
         db.commit()
+        logger.info("settings updated")
     finally:
         db.close()
 
@@ -55,6 +71,7 @@ def _connect_db():
     return the_db
 
 def _create_tables_if_needed(db):
+    global DUMMY_ID
     try:
         cursor = db.cursor()
         cursor.execute('''
@@ -64,8 +81,8 @@ def _create_tables_if_needed(db):
             )
         ''')
         cursor.execute('''
-            INSERT OR IGNORE INTO settings (id) VALUES (1)
-        ''')
+            INSERT OR IGNORE INTO settings (id) VALUES (?)
+        ''', (DUMMY_ID,))
         db.commit()
     except:
         db.close()

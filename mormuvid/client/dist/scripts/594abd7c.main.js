@@ -62,6 +62,28 @@ var App = window.App = Ember.Application.create({
 
 (function() {
 
+App.SettingsController = Ember.ObjectController.extend({
+  actions: {
+    save: function () {
+        var self = this;
+        this.get('model').save().then(
+            function(settings) {
+                self.woof.success("Settings saved.");
+            },
+            function(settings) {
+                self.woof.warning("Failed to save settings.");
+                self.get('model').reload()
+            }
+        );
+    }
+  }
+});
+
+
+})();
+
+(function() {
+
 App.SongController = Ember.ObjectController.extend({
 });
 
@@ -162,9 +184,30 @@ App.VideosController = Ember.ObjectController.extend({
 
 (function() {
 
+
+Ember.Inflector.inflector.uncountable('settings');
+
 App.ApplicationAdapter = DS.RESTAdapter.extend({
     namespace: 'api',
+    ajaxError: function(jqXHR) {
+        var error = this._super(jqXHR);
+        if (jqXHR && jqXHR.status === 422) {
+            var jsonErrors = Ember.$.parseJSON(jqXHR.responseText);
+            return new DS.InvalidError(jsonErrors);
+        } else {
+            return error;
+        }
+    }
 });
+
+})();
+
+(function() {
+
+App.Settings = DS.Model.extend({
+    scoutedDailyQuota: DS.attr('number')
+});
+
 
 })();
 
@@ -202,6 +245,17 @@ App.ApplicationRoute = Ember.Route.extend({
 App.LoadingRoute = Ember.Route.extend({
 });
 
+
+})();
+
+(function() {
+
+App.SettingsRoute = Ember.Route.extend({
+    model: function() {
+        var dummyId = 1;
+        return this.get('store').find('settings', dummyId);
+    }
+});
 
 })();
 
