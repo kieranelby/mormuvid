@@ -259,7 +259,7 @@ function program1(depth0,data) {
   data.buffer.push("\n        <button class='btn btn-danger' ");
   hashTypes = {};
   hashContexts = {};
-  data.buffer.push(escapeExpression(helpers.action.call(depth0, "deleteSong", "song", {hash:{},contexts:[depth0,depth0],types:["STRING","ID"],hashContexts:hashContexts,hashTypes:hashTypes,data:data})));
+  data.buffer.push(escapeExpression(helpers.action.call(depth0, "deleteSong", {hash:{},contexts:[depth0],types:["STRING"],hashContexts:hashContexts,hashTypes:hashTypes,data:data})));
   data.buffer.push(">Really Delete It</button>\n        <br>\n    </div>\n    </form>\n</div>\n\n<div class=\"row\">&nbsp;</div>\n\n<div class=\"row\">\n    <br>\n    <div class=\"panel panel-default\">\n      <div class=\"panel-heading\">\n        <h4 class=\"panel-title\">Advanced Delete Options</h4>\n      </div>\n      <div class=\"panel-body\">\n\n        <form role=\"form\">\n        <div class=\"checkbox\">\n            <label>\n                ");
   hashContexts = {'type': depth0,'checked': depth0,'id': depth0};
   hashTypes = {'type': "STRING",'checked': "ID",'id': "STRING"};
@@ -298,10 +298,47 @@ function program1(depth0,data) {
 Ember.TEMPLATES["song/edit"] = Ember.Handlebars.template(function anonymous(Handlebars,depth0,helpers,partials,data) {
 this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
-  
+  var buffer = '', stack1, hashContexts, hashTypes, options, helperMissing=helpers.helperMissing, escapeExpression=this.escapeExpression;
 
 
-  data.buffer.push("<div class=\"alert alert-warning\" role=\"alert\">\n  <strong>Sorry!</strong> Editing Songs not implemented yet.\n</div>");
+  data.buffer.push("<h3>Edit Song</h3>\n<form role=\"form\">\n    <div class=\"form-group\">\n        <label for=\"inputArtist\">Artist</label>\n        ");
+  hashContexts = {'type': depth0,'value': depth0,'class': depth0,'id': depth0};
+  hashTypes = {'type': "STRING",'value': "ID",'class': "STRING",'id': "STRING"};
+  options = {hash:{
+    'type': ("text"),
+    'value': ("artist"),
+    'class': ("form-control"),
+    'id': ("inputArtist")
+  },contexts:[],types:[],hashContexts:hashContexts,hashTypes:hashTypes,data:data};
+  data.buffer.push(escapeExpression(((stack1 = helpers.input || depth0.input),stack1 ? stack1.call(depth0, options) : helperMissing.call(depth0, "input", options))));
+  data.buffer.push("\n    </div>\n    <div class=\"form-group\">\n        <label for=\"inputTitle\">Title</label>\n        ");
+  hashContexts = {'type': depth0,'value': depth0,'class': depth0,'id': depth0};
+  hashTypes = {'type': "STRING",'value': "ID",'class': "STRING",'id': "STRING"};
+  options = {hash:{
+    'type': ("text"),
+    'value': ("title"),
+    'class': ("form-control"),
+    'id': ("inputTitle")
+  },contexts:[],types:[],hashContexts:hashContexts,hashTypes:hashTypes,data:data};
+  data.buffer.push(escapeExpression(((stack1 = helpers.input || depth0.input),stack1 ? stack1.call(depth0, options) : helperMissing.call(depth0, "input", options))));
+  data.buffer.push("\n    </div>\n    <div class=\"form-group\">\n        <label>Status</label>\n        ");
+  hashTypes = {};
+  hashContexts = {};
+  data.buffer.push(escapeExpression(helpers._triageMustache.call(depth0, "status", {hash:{},contexts:[depth0],types:["ID"],hashContexts:hashContexts,hashTypes:hashTypes,data:data})));
+  data.buffer.push("\n    </div>\n    <div class=\"form-group\">\n        <label>Video URL</label>\n        ");
+  hashTypes = {};
+  hashContexts = {};
+  data.buffer.push(escapeExpression(helpers._triageMustache.call(depth0, "videoURL", {hash:{},contexts:[depth0],types:["ID"],hashContexts:hashContexts,hashTypes:hashTypes,data:data})));
+  data.buffer.push("\n    </div>\n    ");
+  hashTypes = {};
+  hashContexts = {};
+  data.buffer.push(escapeExpression(helpers._triageMustache.call(depth0, "x-woof", {hash:{},contexts:[depth0],types:["ID"],hashContexts:hashContexts,hashTypes:hashTypes,data:data})));
+  data.buffer.push("\n    <button class=\"btn\" onclick=\"window.history.back()\">Cancel</button>\n    <button ");
+  hashTypes = {};
+  hashContexts = {};
+  data.buffer.push(escapeExpression(helpers.action.call(depth0, "updateSong", {hash:{},contexts:[depth0],types:["STRING"],hashContexts:hashContexts,hashTypes:hashTypes,data:data})));
+  data.buffer.push(" class=\"btn btn-primary\">Update Song</button>\n</form>\n");
+  return buffer;
   
 });
 
@@ -322,18 +359,22 @@ function program3(depth0,data) {
   data.buffer.push("Delete");
   }
 
-  data.buffer.push("<dl>\n  <dt>artist</dt><dd>");
+  data.buffer.push("<dl>\n  <dt>Artist</dt><dd>");
   hashTypes = {};
   hashContexts = {};
   data.buffer.push(escapeExpression(helpers._triageMustache.call(depth0, "artist", {hash:{},contexts:[depth0],types:["ID"],hashContexts:hashContexts,hashTypes:hashTypes,data:data})));
-  data.buffer.push("</dd>\n  <dt>title</dt><dd>");
+  data.buffer.push("</dd>\n  <dt>Title</dt><dd>");
   hashTypes = {};
   hashContexts = {};
   data.buffer.push(escapeExpression(helpers._triageMustache.call(depth0, "title", {hash:{},contexts:[depth0],types:["ID"],hashContexts:hashContexts,hashTypes:hashTypes,data:data})));
-  data.buffer.push("</dd>\n  <dt>status</dt><dd>");
+  data.buffer.push("</dd>\n  <dt>Status</dt><dd>");
   hashTypes = {};
   hashContexts = {};
   data.buffer.push(escapeExpression(helpers._triageMustache.call(depth0, "status", {hash:{},contexts:[depth0],types:["ID"],hashContexts:hashContexts,hashTypes:hashTypes,data:data})));
+  data.buffer.push("</dd>\n  <dt>Video URL</dt><dd>");
+  hashTypes = {};
+  hashContexts = {};
+  data.buffer.push(escapeExpression(helpers._triageMustache.call(depth0, "videoURL", {hash:{},contexts:[depth0],types:["ID"],hashContexts:hashContexts,hashTypes:hashTypes,data:data})));
   data.buffer.push("</dd>\n</dl>\n\n<button class=\"btn\" onclick=\"window.history.back()\">Back</button>\n");
   hashContexts = {'class': depth0,'role': depth0};
   hashTypes = {'class': "STRING",'role': "STRING"};
