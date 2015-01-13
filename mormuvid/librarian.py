@@ -12,6 +12,8 @@ from time import time
 
 import pykka
 
+from mormuvid import bans
+from mormuvid.settings import add_observer, get_settings
 from mormuvid.finder import FinderActor
 from mormuvid.downloader import DownloaderActor
 from mormuvid.song import Song
@@ -27,9 +29,13 @@ class Librarian:
 
     max_queued_songs = 5
 
-    def __init__(self, scouted_daily_quota):
-        self.scouted_daily_quota = scouted_daily_quota
+    def __init__(self):
+        add_observer(self)
+        self.settings_updated(get_settings())
         self.cached_songs = None
+
+    def settings_updated(self, settings):
+        self.scouted_daily_quota = settings['scoutedDailyQuota']
 
     def _get_songs_dir(self):
         home = path.expanduser("~")
@@ -57,15 +63,14 @@ class Librarian:
         if self._daily_quota_reached():
             logger.info("don't want song %s right now since reached daily quota", possible_new_song)
             return False
-        # TODO - fuzzier matching to prevent duplicates;
-        # this will only find an existing song with exactly
-        # the same artist and title. Also want artist bans.
-        existing_song = self.retrieve(possible_new_song)
-        if existing_song is None:
-            logger.info("want song %s since have no record of it", possible_new_song)
-            return True
-        else:
+        existing_song = self.check_for_duplicate(possible_new_song)
+        if existing_song is not None:
+            logger.info("don't want song %s since probably same as song %s", possible_new_song, existing_song)
             return False
+        if self.is_banned(possible_new_song):
+            logger.info("don't want song %s since it is banned", possible_new_song)
+            return False
+        return True
 
     def get_song_by_id(self, song_id):
         songs = self.get_songs()
@@ -73,6 +78,18 @@ class Librarian:
             if song.id == song_id:
                 return song
         return None
+
+    def check_for_duplicate(self, song):
+        songs = self.get_songs()
+        for existing_song in songs:
+            if existing_song.id == song.id:
+                return existing_song
+            if existing_song.artist == song.artist and existing_song.title == song.title:
+                return existing_song
+        return None
+
+    def is_banned(self, song):
+        return bans.is_banned(song.artist, song.title)
 
     def delete(self, song):
         base_filepath_wo_ext = self.get_base_filepath(song)
@@ -109,16 +126,6 @@ class Librarian:
             pass
         logger.info("removed song %s from song cache", song)
 
-    def retrieve(self, song):
-        nfo_filepath = self._get_nfo_filepath(song)
-        if path.isfile(nfo_filepath):
-            ctime = os.path.getctime(nfo_filepath)
-            return self._read_nfo_file(nfo_filepath)
-        lock_filepath = self._get_lock_filepath(song)
-        if path.isfile(lock_filepath):
-            return self._read_lock_file(lock_filepath)
-        return None
-
     def _get_finder(self):
         refs = pykka.ActorRegistry.get_by_class(FinderActor)
         return refs[0].proxy()
@@ -126,6 +133,15 @@ class Librarian:
     def _get_downloader(self):
         refs = pykka.ActorRegistry.get_by_class(DownloaderActor)
         return refs[0].proxy()
+
+    def update_existing_song(self, song_id, artist, title):
+        song = self.get_song_by_id(song_id)
+        if song is None:
+            return None
+        song.artist = artist
+        song.title = title
+        self._persist_song(song)
+        return song
 
     def notify_song_requested(self, artist, title, video_watch_url=None):
         song = Song(artist, title)
@@ -151,7 +167,7 @@ class Librarian:
 
     def _notify_find_queued(self, song):
         song.mark_find_queued()
-        self._write_lock_file(song)
+        self._persist_song(song)
         return
 
     def notify_song_found(self, song, video_watch_url):
@@ -163,27 +179,27 @@ class Librarian:
 
     def notify_song_not_found(self, song):
         song.mark_failed()
-        self._write_lock_file(song)
+        self._persist_song(song)
         return
 
     def _notify_download_queued(self, song):
         song.mark_download_queued()
-        self._write_lock_file(song)
+        self._persist_song(song)
         return
 
     def notify_download_failed(self, song):
         song.mark_failed()
-        self._write_lock_file(song)
-        return
-
-    def notify_download_cancelled(self, song):
-        self._delete_lock_file(song)
+        self._persist_song(song)
         return
 
     def notify_download_completed(self, song):
         song.mark_downloaded()
+        self._persist_song(song)
+        return
+
+    def notify_download_cancelled(self, song):
         self._delete_lock_file(song)
-        self._write_nfo_file(song)
+        self.songs_cache_delete(song)
         return
 
     def request_other_video(self, video_url):
@@ -199,10 +215,20 @@ class Librarian:
     def _get_nfo_filepath(self, song):
         return self.get_base_filepath(song) + '.nfo'
 
+    def _persist_song(self, song):
+        if song.status == 'COMPLETED':
+            self._write_nfo_file(song)
+            try:
+                self._delete_lock_file(song)
+            except OSError:
+                pass
+        else:
+            self._write_lock_file(song)
+        self.songs_cache_put(song)
+
     def _write_nfo_file(self, song):
         nfo_filepath = self._get_nfo_filepath(song)
         nfo_xml = song.to_nfo_xml()
-        self.songs_cache_put(song)
         with codecs.open(nfo_filepath, 'w', 'utf-8') as f:
             f.write(nfo_xml)
         return
@@ -225,7 +251,6 @@ class Librarian:
     def _write_lock_file(self, song):
         lock_filepath = self._get_lock_filepath(song)
         nfo_xml = song.to_nfo_xml()
-        self.songs_cache_put(song)
         with codecs.open(lock_filepath, 'w', 'utf-8') as f:
             f.write(nfo_xml)
         return

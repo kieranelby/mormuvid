@@ -93,17 +93,17 @@ class Song(object):
         Can we forget about this song?
         """
         status = self.status
-        if status in ['COMPLETED', 'BANNED']:
-            # no, already got it or explicity rejected
+        if status in ['COMPLETED']:
+            # no, this is definitely still needed
             return False
         elif status in ['FIND_QUEUED', 'DOWNLOAD_QUEUED', 'FAILED', 'FOUND']:
-            # sounds like we've tried or are trying to get this song -
-            # only want to download it if attempt has taken too long.
+            # these statuses should be temporary  - assume something
+            # got stuck after a while and remove entry
             age_seconds = time() - self.updated_at
             retry_after_seconds = (24 * 60 * 60)
             return age_seconds > retry_after_seconds
         else:
-            # unknown status - guess leave it alone?
+            # unknown status - guess leave it alone.
             return False
 
     def __str__(self):

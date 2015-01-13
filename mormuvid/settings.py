@@ -8,6 +8,14 @@ DB_FILENAME = 'settingsdb'
 
 logger = logging.getLogger(__name__)
 DUMMY_ID = 1
+observers = []
+
+def add_observer(observer):
+    observers.append(observer)
+
+def notify_observers(settings):
+    for observer in observers:
+        observer.settings_updated(settings)
 
 def get_settings():
     db = _get_db()
@@ -30,7 +38,6 @@ def get_settings():
         db.close()
 
 def update_settings(settings):
-    global DUMMY_ID
     db = _get_db()
     logger.info("updating settings to %s", settings)
     try:
@@ -44,6 +51,7 @@ def update_settings(settings):
         ''', (settings['scoutedDailyQuota'],DUMMY_ID))
         db.commit()
         logger.info("settings updated")
+        notify_observers(settings)
     finally:
         db.close()
 
@@ -53,7 +61,6 @@ def _get_db():
     return db
 
 def _connect_db():
-    global logger
     logger.info("connecting to settings db")
     db_dir = user_config_dir(appname=APPNAME)
     logger.info("ensuring settings db dir %s exists", db_dir)
@@ -71,7 +78,6 @@ def _connect_db():
     return the_db
 
 def _create_tables_if_needed(db):
-    global DUMMY_ID
     try:
         cursor = db.cursor()
         cursor.execute('''

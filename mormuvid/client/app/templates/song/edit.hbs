@@ -1,3 +1,22 @@
-<div class="alert alert-warning" role="alert">
-  <strong>Sorry!</strong> Editing Songs not implemented yet.
-</div>
+<h3>Edit Song</h3>
+<form role="form">
+    <div class="form-group">
+        <label for="inputArtist">Artist</label>
+        {{input type="text" value=artist class="form-control" id="inputArtist"}}
+    </div>
+    <div class="form-group">
+        <label for="inputTitle">Title</label>
+        {{input type="text" value=title class="form-control" id="inputTitle"}}
+    </div>
+    <div class="form-group">
+        <label>Status</label>
+        {{status}}
+    </div>
+    <div class="form-group">
+        <label>Video URL</label>
+        {{videoURL}}
+    </div>
+    {{x-woof}}
+    <button class="btn" onclick="window.history.back()">Cancel</button>
+    <button {{action "updateSong"}} class="btn btn-primary">Update Song</button>
+</form>
