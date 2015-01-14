@@ -1,6 +1,7 @@
 import logging
 import sqlite3
 import os
+import uuid
 from appdirs import user_config_dir
 
 APPNAME = 'mormuvid'
@@ -27,19 +28,78 @@ def is_banned(artist, title):
     finally:
         db.close()
 
+def get_bans():
+    db = _get_db()
+    bans = []
+    try:
+        cursor = db.cursor()
+        for row in cursor.execute('''
+            SELECT
+              id,
+              artist,
+              title
+            FROM
+              ban b
+            ORDER BY
+              artist,
+              title
+        '''):
+            ban = {'id': row[0], 'artist': row[1], 'title': row[2]}
+            bans.append(ban)
+        return bans
+    finally:
+        db.close()
+
 def add_ban(artist, title):
     db = _connect_db()
-    logger.info("adding ban on %s - %s", artist, title)
+    ban_id = uuid.uuid4().hex
+    logger.info("adding ban #%s on %s - %s", ban_id, artist, title)
     try:
         cursor = db.cursor()
         cursor.execute('''
             INSERT INTO ban
-            (artist, title)
+            (id, artist, title)
             VALUES
-            (?, ?)
-        ''', (artist, title))
+            (?, ?, ?)
+        ''', (ban_id, artist, title))
         db.commit()
         logger.info("added ban on %s - %s", artist, title)
+        ban = {'id': ban_id, 'artist': artist, 'title': title}
+        return ban
+    finally:
+        db.close()
+
+def get_ban(ban_id):
+    db = _get_db()
+    try:
+        cursor = db.cursor()
+        cursor.execute('''
+            SELECT
+              id,
+              artist,
+              title
+            FROM
+              ban b
+            WHERE
+              b.id = ?
+        ''', (ban_id,))
+        row = cursor.fetchone()
+        ban = {'id': row[0], 'artist': row[1], 'title': row[2]}
+        return ban
+    finally:
+        db.close()
+
+def remove_ban(ban_id):
+    db = _get_db()
+    try:
+        cursor = db.cursor()
+        cursor.execute('''
+            DELETE FROM
+              ban
+            WHERE
+              id = ?
+        ''', (ban_id,))
+        db.commit()
     finally:
         db.close()
 
@@ -70,7 +130,7 @@ def _create_tables_if_needed(db):
         cursor = db.cursor()
         cursor.execute('''
             CREATE TABLE IF NOT EXISTS ban (
-                id INTEGER PRIMARY KEY,
+                id CHAR(32) NOT NULL PRIMARY KEY,
                 artist VARCHAR(255) NOT NULL,
                 title VARCHAR(255),
                 added_on DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP

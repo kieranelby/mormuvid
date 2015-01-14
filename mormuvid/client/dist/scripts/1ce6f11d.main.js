@@ -62,6 +62,37 @@ var App = window.App = Ember.Application.create({
 
 (function() {
 
+App.BansController = Ember.ArrayController.extend({
+  actions: {
+    liftBan: function (ban) {
+        var self = this;
+        this.store.find('ban', ban.id).then(
+            function (banRecord) {
+                banRecord.destroyRecord().then(
+                    function(ban) {
+                        self.woof.success("Ban lifted.");
+                        self.transitionToRoute('bans');
+                    },
+                    function(ban) {
+                        self.woof.warning("Failed to lift ban (destroyRecord failed).");
+                        self.transitionToRoute('bans');
+                    }
+                );
+            },
+            function() {
+                self.woof.warning("Failed to lift ban (record not found).");
+                self.transitionToRoute('bans');
+            }
+        );
+    }
+  }
+});
+
+
+})();
+
+(function() {
+
 App.SettingsController = Ember.ObjectController.extend({
   actions: {
     save: function () {
@@ -297,6 +328,16 @@ App.ApplicationRoute = Ember.Route.extend({
 
 (function() {
 
+App.BansRoute = Ember.Route.extend({
+    setupController: function(controller) {
+        controller.set('model', this.get('store').findAll('ban'))
+    }
+});
+
+})();
+
+(function() {
+
 App.LoadingRoute = Ember.Route.extend({
 });
 
@@ -408,6 +449,7 @@ App.Router.map(function () {
             this.route('delete');
         });
     });
+    this.resource('bans');
     this.resource('videos');
     this.resource('settings');
 });

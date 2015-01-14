@@ -68,6 +68,81 @@ function program7(depth0,data) {
   
 });
 
+Ember.TEMPLATES["bans"] = Ember.Handlebars.template(function anonymous(Handlebars,depth0,helpers,partials,data) {
+this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
+  var buffer = '', stack1, stack2, hashTypes, hashContexts, options, escapeExpression=this.escapeExpression, self=this, helperMissing=helpers.helperMissing;
+
+function program1(depth0,data) {
+  
+  
+  data.buffer.push("Songs");
+  }
+
+function program3(depth0,data) {
+  
+  
+  data.buffer.push("Banned Songs");
+  }
+
+function program5(depth0,data) {
+  
+  var buffer = '', stack1, hashTypes, hashContexts;
+  data.buffer.push("\n    <li class=\"list-group-item\">\n        ");
+  hashTypes = {};
+  hashContexts = {};
+  data.buffer.push(escapeExpression(helpers._triageMustache.call(depth0, "ban.artist", {hash:{},contexts:[depth0],types:["ID"],hashContexts:hashContexts,hashTypes:hashTypes,data:data})));
+  data.buffer.push("\n        ");
+  hashTypes = {};
+  hashContexts = {};
+  stack1 = helpers['if'].call(depth0, "ban.title", {hash:{},inverse:self.program(8, program8, data),fn:self.program(6, program6, data),contexts:[depth0],types:["ID"],hashContexts:hashContexts,hashTypes:hashTypes,data:data});
+  if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
+  data.buffer.push("\n        <span>\n            <button ");
+  hashTypes = {};
+  hashContexts = {};
+  data.buffer.push(escapeExpression(helpers.action.call(depth0, "liftBan", "ban", {hash:{},contexts:[depth0,depth0],types:["STRING","ID"],hashContexts:hashContexts,hashTypes:hashTypes,data:data})));
+  data.buffer.push(" class=\"btn btn-danger btn-xs\">Remove Ban</button>\n        </span>\n    </li>\n  ");
+  return buffer;
+  }
+function program6(depth0,data) {
+  
+  var buffer = '', hashTypes, hashContexts;
+  data.buffer.push("\n            - ");
+  hashTypes = {};
+  hashContexts = {};
+  data.buffer.push(escapeExpression(helpers._triageMustache.call(depth0, "ban.title", {hash:{},contexts:[depth0],types:["ID"],hashContexts:hashContexts,hashTypes:hashTypes,data:data})));
+  data.buffer.push("\n        ");
+  return buffer;
+  }
+
+function program8(depth0,data) {
+  
+  
+  data.buffer.push("\n            - <strong>All Songs</strong>\n        ");
+  }
+
+  data.buffer.push("<div class=\"page-header\">\n    <h2>");
+  hashTypes = {};
+  hashContexts = {};
+  options = {hash:{},inverse:self.noop,fn:self.program(1, program1, data),contexts:[depth0],types:["STRING"],hashContexts:hashContexts,hashTypes:hashTypes,data:data};
+  stack2 = ((stack1 = helpers['link-to'] || depth0['link-to']),stack1 ? stack1.call(depth0, "songs", options) : helperMissing.call(depth0, "link-to", "songs", options));
+  if(stack2 || stack2 === 0) { data.buffer.push(stack2); }
+  data.buffer.push(" - ");
+  hashTypes = {};
+  hashContexts = {};
+  options = {hash:{},inverse:self.noop,fn:self.program(3, program3, data),contexts:[depth0],types:["STRING"],hashContexts:hashContexts,hashTypes:hashTypes,data:data};
+  stack2 = ((stack1 = helpers['link-to'] || depth0['link-to']),stack1 ? stack1.call(depth0, "bans", options) : helperMissing.call(depth0, "link-to", "bans", options));
+  if(stack2 || stack2 === 0) { data.buffer.push(stack2); }
+  data.buffer.push("</h2>\n</div>\n<ul class=\"list-group\">\n  ");
+  hashTypes = {};
+  hashContexts = {};
+  stack2 = helpers.each.call(depth0, "ban", "in", "model", {hash:{},inverse:self.noop,fn:self.program(5, program5, data),contexts:[depth0,depth0,depth0],types:["ID","ID","ID"],hashContexts:hashContexts,hashTypes:hashTypes,data:data});
+  if(stack2 || stack2 === 0) { data.buffer.push(stack2); }
+  data.buffer.push("\n</ul>\n");
+  return buffer;
+  
+});
+
 Ember.TEMPLATES["components/x-woof-message"] = Ember.Handlebars.template(function anonymous(Handlebars,depth0,helpers,partials,data) {
 this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
@@ -155,19 +230,37 @@ function program3(depth0,data) {
 Ember.TEMPLATES["loading"] = Ember.Handlebars.template(function anonymous(Handlebars,depth0,helpers,partials,data) {
 this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
+  var buffer = '', stack1, stack2, hashTypes, hashContexts, options, self=this, helperMissing=helpers.helperMissing;
+
+function program1(depth0,data) {
   
+  
+  data.buffer.push("Other Videos");
+  }
 
-
-  data.buffer.push("<h1>Loading ...</h1>\n");
+  data.buffer.push("<div class=\"page-header\">\n    <h2>");
+  hashTypes = {};
+  hashContexts = {};
+  options = {hash:{},inverse:self.noop,fn:self.program(1, program1, data),contexts:[depth0],types:["STRING"],hashContexts:hashContexts,hashTypes:hashTypes,data:data};
+  stack2 = ((stack1 = helpers['link-to'] || depth0['link-to']),stack1 ? stack1.call(depth0, "videos", options) : helperMissing.call(depth0, "link-to", "videos", options));
+  if(stack2 || stack2 === 0) { data.buffer.push(stack2); }
+  data.buffer.push("</h2>\n</div>\n<p>\nPlease wait while we carry out your wishes ...\n</p>\n\n");
+  return buffer;
   
 });
 
 Ember.TEMPLATES["settings"] = Ember.Handlebars.template(function anonymous(Handlebars,depth0,helpers,partials,data) {
 this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
-  var buffer = '', stack1, hashTypes, hashContexts, options, escapeExpression=this.escapeExpression, self=this, helperMissing=helpers.helperMissing;
+  var buffer = '', stack1, stack2, hashTypes, hashContexts, options, escapeExpression=this.escapeExpression, self=this, helperMissing=helpers.helperMissing;
 
 function program1(depth0,data) {
+  
+  
+  data.buffer.push("Settings");
+  }
+
+function program3(depth0,data) {
   
   var buffer = '', hashTypes, hashContexts;
   data.buffer.push("\n    <div class=\"error\">\n        ");
@@ -178,11 +271,17 @@ function program1(depth0,data) {
   return buffer;
   }
 
-  data.buffer.push("<h3>Settings</h3>\n<form role=\"form\">\n    ");
+  data.buffer.push("<div class=\"page-header\">\n    <h2>");
   hashTypes = {};
   hashContexts = {};
-  stack1 = helpers.each.call(depth0, "message", "in", "errors.messages", {hash:{},inverse:self.noop,fn:self.program(1, program1, data),contexts:[depth0,depth0,depth0],types:["ID","ID","ID"],hashContexts:hashContexts,hashTypes:hashTypes,data:data});
-  if(stack1 || stack1 === 0) { data.buffer.push(stack1); }
+  options = {hash:{},inverse:self.noop,fn:self.program(1, program1, data),contexts:[depth0],types:["STRING"],hashContexts:hashContexts,hashTypes:hashTypes,data:data};
+  stack2 = ((stack1 = helpers['link-to'] || depth0['link-to']),stack1 ? stack1.call(depth0, "settings", options) : helperMissing.call(depth0, "link-to", "settings", options));
+  if(stack2 || stack2 === 0) { data.buffer.push(stack2); }
+  data.buffer.push("</h2>\n</div>\n<form role=\"form\">\n    ");
+  hashTypes = {};
+  hashContexts = {};
+  stack2 = helpers.each.call(depth0, "message", "in", "errors.messages", {hash:{},inverse:self.noop,fn:self.program(3, program3, data),contexts:[depth0,depth0,depth0],types:["ID","ID","ID"],hashContexts:hashContexts,hashTypes:hashTypes,data:data});
+  if(stack2 || stack2 === 0) { data.buffer.push(stack2); }
   data.buffer.push("\n    <div class=\"form-group\">\n        <label for=\"inputScoutedDailyQuota\">Scouted Songs Daily Limit</label>\n        ");
   hashContexts = {'type': depth0,'value': depth0,'class': depth0,'id': depth0};
   hashTypes = {'type': "STRING",'value': "ID",'class': "STRING",'id': "STRING"};
@@ -301,7 +400,7 @@ helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
   var buffer = '', stack1, hashContexts, hashTypes, options, helperMissing=helpers.helperMissing, escapeExpression=this.escapeExpression;
 
 
-  data.buffer.push("<h3>Edit Song</h3>\n<form role=\"form\">\n    <div class=\"form-group\">\n        <label for=\"inputArtist\">Artist</label>\n        ");
+  data.buffer.push("<h3>Edit Song Details</h3>\n<form role=\"form\">\n    <div class=\"form-group\">\n        <label for=\"inputArtist\">Artist</label>\n        ");
   hashContexts = {'type': depth0,'value': depth0,'class': depth0,'id': depth0};
   hashTypes = {'type': "STRING",'value': "ID",'class': "STRING",'id': "STRING"};
   options = {hash:{
@@ -409,13 +508,13 @@ function program1(depth0,data) {
   data.buffer.push("Songs");
   }
 
-  data.buffer.push("<div class=\"page-header\">\n    <h1>");
+  data.buffer.push("<div class=\"page-header\">\n    <h2>");
   hashTypes = {};
   hashContexts = {};
   options = {hash:{},inverse:self.noop,fn:self.program(1, program1, data),contexts:[depth0],types:["STRING"],hashContexts:hashContexts,hashTypes:hashTypes,data:data};
   stack2 = ((stack1 = helpers['link-to'] || depth0['link-to']),stack1 ? stack1.call(depth0, "songs", options) : helperMissing.call(depth0, "link-to", "songs", options));
   if(stack2 || stack2 === 0) { data.buffer.push(stack2); }
-  data.buffer.push("</h1>\n</div>\n");
+  data.buffer.push("</h2>\n</div>\n");
   hashTypes = {};
   hashContexts = {};
   data.buffer.push(escapeExpression(helpers._triageMustache.call(depth0, "outlet", {hash:{},contexts:[depth0],types:["ID"],hashContexts:hashContexts,hashTypes:hashTypes,data:data})));
@@ -436,6 +535,12 @@ function program1(depth0,data) {
   }
 
 function program3(depth0,data) {
+  
+  
+  data.buffer.push("Manage Banned Songs »");
+  }
+
+function program5(depth0,data) {
   
   var buffer = '', hashTypes, hashContexts;
   data.buffer.push("\n        <tr ");
@@ -463,12 +568,39 @@ function program3(depth0,data) {
   },inverse:self.noop,fn:self.program(1, program1, data),contexts:[depth0],types:["STRING"],hashContexts:hashContexts,hashTypes:hashTypes,data:data};
   stack2 = ((stack1 = helpers['link-to'] || depth0['link-to']),stack1 ? stack1.call(depth0, "songs.new", options) : helperMissing.call(depth0, "link-to", "songs.new", options));
   if(stack2 || stack2 === 0) { data.buffer.push(stack2); }
+  data.buffer.push("\n    ");
+  hashContexts = {'class': depth0,'role': depth0};
+  hashTypes = {'class': "STRING",'role': "STRING"};
+  options = {hash:{
+    'class': ("btn btn-default"),
+    'role': ("button")
+  },inverse:self.noop,fn:self.program(3, program3, data),contexts:[depth0],types:["STRING"],hashContexts:hashContexts,hashTypes:hashTypes,data:data};
+  stack2 = ((stack1 = helpers['link-to'] || depth0['link-to']),stack1 ? stack1.call(depth0, "bans", options) : helperMissing.call(depth0, "link-to", "bans", options));
+  if(stack2 || stack2 === 0) { data.buffer.push(stack2); }
   data.buffer.push("\n</p>\n\n<table class=\"table table-hover table-condensed mormuvid-table-clickable\">\n    <thead>\n        <tr>\n            <th>Artist</th>\n            <th>Title</th>\n        </tr>\n    </thead>\n    <tbody>\n        ");
   hashTypes = {};
   hashContexts = {};
-  stack2 = helpers.each.call(depth0, "controller.arrangedContent", {hash:{},inverse:self.noop,fn:self.program(3, program3, data),contexts:[depth0],types:["ID"],hashContexts:hashContexts,hashTypes:hashTypes,data:data});
+  stack2 = helpers.each.call(depth0, "controller.arrangedContent", {hash:{},inverse:self.noop,fn:self.program(5, program5, data),contexts:[depth0],types:["ID"],hashContexts:hashContexts,hashTypes:hashTypes,data:data});
   if(stack2 || stack2 === 0) { data.buffer.push(stack2); }
-  data.buffer.push("\n    </tbody>\n</table>\n");
+  data.buffer.push("\n    </tbody>\n</table>\n\n<p>\n    ");
+  hashContexts = {'class': depth0,'role': depth0};
+  hashTypes = {'class': "STRING",'role': "STRING"};
+  options = {hash:{
+    'class': ("btn btn-primary"),
+    'role': ("button")
+  },inverse:self.noop,fn:self.program(1, program1, data),contexts:[depth0],types:["STRING"],hashContexts:hashContexts,hashTypes:hashTypes,data:data};
+  stack2 = ((stack1 = helpers['link-to'] || depth0['link-to']),stack1 ? stack1.call(depth0, "songs.new", options) : helperMissing.call(depth0, "link-to", "songs.new", options));
+  if(stack2 || stack2 === 0) { data.buffer.push(stack2); }
+  data.buffer.push("\n    ");
+  hashContexts = {'class': depth0,'role': depth0};
+  hashTypes = {'class': "STRING",'role': "STRING"};
+  options = {hash:{
+    'class': ("btn btn-default"),
+    'role': ("button")
+  },inverse:self.noop,fn:self.program(3, program3, data),contexts:[depth0],types:["STRING"],hashContexts:hashContexts,hashTypes:hashTypes,data:data};
+  stack2 = ((stack1 = helpers['link-to'] || depth0['link-to']),stack1 ? stack1.call(depth0, "bans", options) : helperMissing.call(depth0, "link-to", "bans", options));
+  if(stack2 || stack2 === 0) { data.buffer.push(stack2); }
+  data.buffer.push("\n</p>\n");
   return buffer;
   
 });
@@ -479,7 +611,7 @@ helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
   var buffer = '', stack1, hashContexts, hashTypes, options, helperMissing=helpers.helperMissing, escapeExpression=this.escapeExpression;
 
 
-  data.buffer.push("<h3>New Song</h3>\n<form role=\"form\">\n    <div class=\"form-group\">\n        <label for=\"inputArtist\">Artist</label>\n        ");
+  data.buffer.push("<h3>Add a New Song</h3>\n<form role=\"form\">\n    <div class=\"form-group\">\n        <label for=\"inputArtist\">Artist</label>\n        ");
   hashContexts = {'type': depth0,'value': depth0,'class': depth0,'id': depth0,'placeholder': depth0};
   hashTypes = {'type': "STRING",'value': "ID",'class': "STRING",'id': "STRING",'placeholder': "STRING"};
   options = {hash:{
@@ -533,13 +665,25 @@ helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
 function program1(depth0,data) {
   
   
+  data.buffer.push("Other Videos");
+  }
+
+function program3(depth0,data) {
+  
+  
   data.buffer.push("the Songs tab");
   }
 
-  data.buffer.push("<h3>Download A Video</h3>\n<p>\n(which presumably <i>isn't</i> a music video, since ");
+  data.buffer.push("<div class=\"page-header\">\n    <h2>");
   hashTypes = {};
   hashContexts = {};
   options = {hash:{},inverse:self.noop,fn:self.program(1, program1, data),contexts:[depth0],types:["STRING"],hashContexts:hashContexts,hashTypes:hashTypes,data:data};
+  stack2 = ((stack1 = helpers['link-to'] || depth0['link-to']),stack1 ? stack1.call(depth0, "videos", options) : helperMissing.call(depth0, "link-to", "videos", options));
+  if(stack2 || stack2 === 0) { data.buffer.push(stack2); }
+  data.buffer.push("</h2>\n</div>\n<h3>Download a Video</h3>\n<p>\n(which presumably <i>isn't</i> a music video, since ");
+  hashTypes = {};
+  hashContexts = {};
+  options = {hash:{},inverse:self.noop,fn:self.program(3, program3, data),contexts:[depth0],types:["STRING"],hashContexts:hashContexts,hashTypes:hashTypes,data:data};
   stack2 = ((stack1 = helpers['link-to'] || depth0['link-to']),stack1 ? stack1.call(depth0, "songs", options) : helperMissing.call(depth0, "link-to", "songs", options));
   if(stack2 || stack2 === 0) { data.buffer.push(stack2); }
   data.buffer.push(" is better for those?)\n</p>\n<form role=\"form\">\n    <div class=\"form-group\">\n        <label for=\"inputVideoURL\">Video URL</label>\n        ");

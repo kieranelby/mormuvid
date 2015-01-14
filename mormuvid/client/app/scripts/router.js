@@ -6,6 +6,7 @@ App.Router.map(function () {
             this.route('delete');
         });
     });
+    this.resource('bans');
     this.resource('videos');
     this.resource('settings');
 });

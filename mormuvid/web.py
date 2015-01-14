@@ -8,7 +8,7 @@ import jsonpickle
 from mormuvid.song import Song
 from mormuvid.settings import get_settings
 from mormuvid.settings import update_settings
-from mormuvid.bans import add_ban
+from mormuvid.bans import add_ban, get_bans, get_ban, remove_ban
 
 logger = logging.getLogger(__name__)
 librarian = None
@@ -95,10 +95,25 @@ def api_settings_put(dummy_id):
         render_json_error_response("failed to save settings")
     return api_settings_get(dummy_id)
 
+@route('/api/bans', method='GET')
+def api_bans():
+    bans = get_bans()
+    return jsonpickle.encode({'bans': bans})
+
+@route('/api/bans/<ban_id>', method='GET')
+def api_bans_get(ban_id):
+    ban = get_ban(ban_id)
+    return jsonpickle.encode({'ban': ban})
+
+@route('/api/bans/<ban_id>', method='DELETE')
+def api_bans_delete(ban_id):
+    ban = remove_ban(ban_id)
+    return HTTPResponse(status=204)
+
 @route('/api/bans', method='POST')
 def api_bans_create():
-    ban = request.json['ban']
-    add_ban(ban['artist'], ban['title'])
+    requested_ban = request.json['ban']
+    ban = add_ban(requested_ban['artist'], requested_ban['title'])
     return jsonpickle.encode({'ban': ban})
 
 @route('/')

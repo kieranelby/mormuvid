@@ -1,0 +1,18 @@
+<div class="page-header">
+    <h2>{{#link-to 'songs'}}Songs{{/link-to}} - {{#link-to 'bans'}}Banned Songs{{/link-to}}</h2>
+</div>
+<ul class="list-group">
+  {{#each ban in model}}
+    <li class="list-group-item">
+        {{ban.artist}}
+        {{#if ban.title}}
+            - {{ban.title}}
+        {{else}}
+            - <strong>All Songs</strong>
+        {{/if}}
+        <span>
+            <button {{action "liftBan" ban}} class="btn btn-danger btn-xs">Remove Ban</button>
+        </span>
+    </li>
+  {{/each}}
+</ul>
