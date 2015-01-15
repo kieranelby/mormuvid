@@ -1,6 +1,9 @@
 <div class="page-header">
     <h2>{{#link-to 'songs'}}Songs{{/link-to}} - {{#link-to 'bans'}}Banned Songs{{/link-to}}</h2>
 </div>
+{{#if noBansFound}}
+<p>You have not banned any songs yet. You can ban a song when you delete it.</p>
+{{else}}
 <ul class="list-group">
   {{#each ban in model}}
     <li class="list-group-item">
@@ -16,3 +19,4 @@
     </li>
   {{/each}}
 </ul>
+{{/if}}

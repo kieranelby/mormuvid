@@ -63,6 +63,12 @@ var App = window.App = Ember.Application.create({
 (function() {
 
 App.BansController = Ember.ArrayController.extend({
+  // hmm, this seems to be suprisingly fiddly to get working reliably ...
+  noBansFound: function () {
+    var items = this.get('content');
+    var numItems = items.get('length');
+    return numItems < 1;
+  }.property('content.length'),
   actions: {
     liftBan: function (ban) {
         var self = this;
