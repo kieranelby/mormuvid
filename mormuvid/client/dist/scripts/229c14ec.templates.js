@@ -246,22 +246,10 @@ function program3(depth0,data) {
 Ember.TEMPLATES["loading"] = Ember.Handlebars.template(function anonymous(Handlebars,depth0,helpers,partials,data) {
 this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Ember.Handlebars.helpers); data = data || {};
-  var buffer = '', stack1, stack2, hashTypes, hashContexts, options, self=this, helperMissing=helpers.helperMissing;
-
-function program1(depth0,data) {
   
-  
-  data.buffer.push("Other Videos");
-  }
 
-  data.buffer.push("<div class=\"page-header\">\n    <h2>");
-  hashTypes = {};
-  hashContexts = {};
-  options = {hash:{},inverse:self.noop,fn:self.program(1, program1, data),contexts:[depth0],types:["STRING"],hashContexts:hashContexts,hashTypes:hashTypes,data:data};
-  stack2 = ((stack1 = helpers['link-to'] || depth0['link-to']),stack1 ? stack1.call(depth0, "videos", options) : helperMissing.call(depth0, "link-to", "videos", options));
-  if(stack2 || stack2 === 0) { data.buffer.push(stack2); }
-  data.buffer.push("</h2>\n</div>\n<p>\nPlease wait while we carry out your wishes ...\n</p>\n\n");
-  return buffer;
+
+  data.buffer.push("<div class=\"page-header\">\n    <h2>Loading ...</h2>\n</div>\n<p>Please wait while we load this information ...</p>\n");
   
 });
 

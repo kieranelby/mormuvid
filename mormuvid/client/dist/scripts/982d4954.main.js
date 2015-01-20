@@ -335,8 +335,8 @@ App.ApplicationRoute = Ember.Route.extend({
 (function() {
 
 App.BansRoute = Ember.Route.extend({
-    setupController: function(controller) {
-        controller.set('model', this.get('store').findAll('ban'))
+    model: function() {
+        return this.get('store').findAll('ban');
     }
 });
 
