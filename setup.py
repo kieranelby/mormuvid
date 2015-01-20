@@ -104,7 +104,7 @@ setup(
         'beautifulsoup4>=4.3.2',
         'requests>=2.3.0',
         'pykka>=1.2.0',
-        'youtube-dl>=2015.01.15',
+        'youtube-dl>=2015.01.16',
         'subprocess32>=3.2.6',
         'cherrypy>=3.3.0',
         'bottle>=0.12.7',

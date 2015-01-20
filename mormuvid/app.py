@@ -53,7 +53,7 @@ class App:
         shutdown_downloaders()
         logger.info("waiting for actors to stop ...")
         try:
-            ActorRegistry.stop_all(timeout=30)
+            ActorRegistry.stop_all(timeout=10)
         except Exception:
             logger.exception()
         logger.info("stopping web server ...")

@@ -1,7 +1,8 @@
 import logging
 import os
 
-from bottle import route, run, debug, static_file, request, HTTPResponse, abort
+import cherrypy
+from bottle import Bottle, ServerAdapter, static_file, request, HTTPResponse, abort
 
 import jsonpickle
 
@@ -12,28 +13,49 @@ from mormuvid.bans import add_ban, get_bans, get_ban, remove_ban
 
 logger = logging.getLogger(__name__)
 librarian = None
+app = Bottle()
+webserver = None
 
 _ROOT = os.path.abspath(os.path.dirname(__file__))
 _STATIC_PATH = os.path.join(_ROOT, 'client', 'dist')
 
+# Use our own adapter so we can shutdown cleanly ...
+class MyCherryPyServer(ServerAdapter):
+    server = None
+    def run(self, handler):
+        from cherrypy import wsgiserver
+        self.options['bind_addr'] = (self.host, self.port)
+        self.options['wsgi_app'] = handler
+        self.server = wsgiserver.CherryPyWSGIServer(**self.options)
+        try:
+            self.server.start()
+        finally:
+            self.server.stop()
+    def stop(self):
+        self.server.stop()
+
 def start_web_and_block(the_librarian):
     global librarian
+    global app
+    global webserver
     librarian = the_librarian
-    debug(True)
-    run(host='0.0.0.0', port=2156)
+    listen_addr = '0.0.0.0'
+    listen_port = 2156
+    webserver = MyCherryPyServer(host=listen_addr, port=listen_port)
+    # will block here
+    app.run(server=webserver)
 
 def stop_web():
     """Request for the server to shutdown."""
-    # TODO - need to figure out how to stop bottle!
-    pass
+    webserver.stop()
 
-@route('/api/songs', method='GET')
+@app.route('/api/songs', method='GET')
 def api_songs():
     global librarian
     songs = librarian.get_songs()
     return jsonpickle.encode({'songs': songs})
 
-@route('/api/songs', method='POST')
+@app.route('/api/songs', method='POST')
 def api_songs_create():
     global librarian
     requestSong = request.json['song']
@@ -44,14 +66,14 @@ def api_songs_create():
     song = librarian.notify_song_requested(artist, title, videoURL)
     return jsonpickle.encode({'song': song})
 
-@route('/api/songs/<song_id>')
+@app.route('/api/songs/<song_id>')
 def api_song(song_id):
     global librarian
     song = librarian.get_song_by_id(song_id)
     if song is not None:
         return jsonpickle.encode({'song': song})
 
-@route('/api/songs/<song_id>', method='PUT')
+@app.route('/api/songs/<song_id>', method='PUT')
 def api_song_update(song_id):
     global librarian
     requestSong = request.json['song']
@@ -63,7 +85,7 @@ def api_song_update(song_id):
     else:
         return jsonpickle.encode({'song': resulting_song})
 
-@route('/api/songs/<song_id>', method='DELETE')
+@app.route('/api/songs/<song_id>', method='DELETE')
 def api_song_delete(song_id):
     global librarian
     song = librarian.get_song_by_id(song_id)
@@ -71,7 +93,7 @@ def api_song_delete(song_id):
         librarian.delete(song)
     return HTTPResponse(status=204)
 
-@route('/api/videos', method='POST')
+@app.route('/api/videos', method='POST')
 def api_videos_create():
     global librarian
     requestVideo = request.json['video']
@@ -80,12 +102,12 @@ def api_videos_create():
     video = librarian.request_other_video(videoURL)
     return jsonpickle.encode({'video': video})
 
-@route('/api/settings/<dummy_id>', method='GET')
+@app.route('/api/settings/<dummy_id>', method='GET')
 def api_settings_get(dummy_id):
     settings = get_settings()
     return jsonpickle.encode({'settings': settings})
 
-@route('/api/settings/<dummy_id>', method='PUT')
+@app.route('/api/settings/<dummy_id>', method='PUT')
 def api_settings_put(dummy_id):
     settings_from_request = request.json['settings']
     try:
@@ -95,32 +117,32 @@ def api_settings_put(dummy_id):
         render_json_error_response("failed to save settings")
     return api_settings_get(dummy_id)
 
-@route('/api/bans', method='GET')
+@app.route('/api/bans', method='GET')
 def api_bans():
     bans = get_bans()
     return jsonpickle.encode({'bans': bans})
 
-@route('/api/bans/<ban_id>', method='GET')
+@app.route('/api/bans/<ban_id>', method='GET')
 def api_bans_get(ban_id):
     ban = get_ban(ban_id)
     return jsonpickle.encode({'ban': ban})
 
-@route('/api/bans/<ban_id>', method='DELETE')
+@app.route('/api/bans/<ban_id>', method='DELETE')
 def api_bans_delete(ban_id):
     ban = remove_ban(ban_id)
     return HTTPResponse(status=204)
 
-@route('/api/bans', method='POST')
+@app.route('/api/bans', method='POST')
 def api_bans_create():
     requested_ban = request.json['ban']
     ban = add_ban(requested_ban['artist'], requested_ban['title'])
     return jsonpickle.encode({'ban': ban})
 
-@route('/')
+@app.route('/')
 def root():
     return other_path('index.html')
 
-@route('/<other_path:path>')
+@app.route('/<other_path:path>')
 def other_path(other_path):
     logger.info("playing static file %s from %s", other_path, _STATIC_PATH)
     return static_file(other_path, root=_STATIC_PATH)

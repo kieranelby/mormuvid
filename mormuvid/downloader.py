@@ -88,7 +88,7 @@ class DownloaderActor(pykka.ThreadingActor):
         self.subprocess = None
         if resultcode != 0:
             if self.is_shutdown:
-                raise ShutdownException("cancelled download of %s since shutting down", video_watch_url)
+                raise ShutdownException("cancelled download of %s since shutting down" % video_watch_url)
             else:
                 raise Exception("subcommand %s returned non-zero exit code %s", command, resultcode)
 
