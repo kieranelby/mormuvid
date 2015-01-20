@@ -2,7 +2,8 @@ import logging
 import os
 
 import cherrypy
-from bottle import Bottle, ServerAdapter, static_file, request, HTTPResponse, abort
+from bottle import Bottle, ServerAdapter, run, static_file, request, HTTPResponse, abort
+from requestlogger import WSGILogger, ApacheFormatter
 
 import jsonpickle
 
@@ -23,6 +24,7 @@ _STATIC_PATH = os.path.join(_ROOT, 'client', 'dist')
 class MyCherryPyServer(ServerAdapter):
     server = None
     def run(self, handler):
+        cherrypy.config.update({'log.screen': True})
         from cherrypy import wsgiserver
         self.options['bind_addr'] = (self.host, self.port)
         self.options['wsgi_app'] = handler
@@ -42,8 +44,9 @@ def start_web_and_block(the_librarian):
     listen_addr = '0.0.0.0'
     listen_port = 2156
     webserver = MyCherryPyServer(host=listen_addr, port=listen_port)
+    logging_app = WSGILogger(app, [], ApacheFormatter())
     # will block here
-    app.run(server=webserver)
+    run(app=logging_app, server=webserver)
 
 def stop_web():
     """Request for the server to shutdown."""
