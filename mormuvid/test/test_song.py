@@ -1,5 +1,6 @@
 import unittest
 
+from time import time
 from mormuvid.song import Song
 
 class MyTest(unittest.TestCase):
@@ -49,3 +50,30 @@ class MyTest(unittest.TestCase):
         self.assertEqual(song.artist, read_back_song.artist)
         self.assertEqual(song.title, read_back_song.title)
         self.assertEqual(song.video_watch_url, read_back_song.video_watch_url)
+
+    def testMarkingSongChangesUpdateTime(self):
+        # Given an example scouted song with a known update time in the past
+        song = self.getExampleScoutedSong()
+        original_updated_at = 12345
+        song.updated_at = original_updated_at
+        # When we mark it as found
+        song.mark_found(self.exampleVideoUrl)
+        # Then the update time changes
+        self.assertTrue(song.updated_at > original_updated_at)
+
+    def testRecentNonCompletedSongNotStale(self):
+        # Given an example scouted song
+        song = self.getExampleScoutedSong()
+        # When we mark it as found right now
+        song.mark_found(self.exampleVideoUrl)
+        # Then it doesn't count as stale
+        self.assertFalse(song.is_stale())
+
+    def testOldNonCompletedSongNotStale(self):
+        # Given an example scouted song
+        song = self.getExampleScoutedSong()
+        # When we mark it as found ages ago
+        song.mark_found(self.exampleVideoUrl)
+        song.updated_at = time() - 90 * 24 * 60 * 60
+        # Then it is considered stale
+        self.assertTrue(song.is_stale())

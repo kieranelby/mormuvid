@@ -6,27 +6,28 @@ from appdirs import user_config_dir
 
 APPNAME = 'mormuvid'
 DB_FILENAME = 'bansdb'
+ALL_TITLES_MARKER = '__ALL__'
 
 logger = logging.getLogger(__name__)
 
+def enable_test_profile():
+    global DB_FILENAME
+    DB_FILENAME = 'test-bansdb'
+
 def is_banned(artist, title):
-    db = _get_db()
-    try:
-        cursor = db.cursor()
-        cursor.execute('''
-            SELECT
-              count(*) as num_bans
-            FROM
-              ban b
-            WHERE
-              b.artist = ?
-              and (b.title is NULL or b.title = ?)
-        ''', (artist, title))
-        row = cursor.fetchone()
-        num_bans = row[0]
-        return num_bans > 0
-    finally:
-        db.close()
+    ban = _find_exact_ban(artist, title)
+    if ban is not None:
+        return True
+    ban = _find_exact_ban(artist, ALL_TITLES_MARKER)
+    if ban is not None:
+        return True
+    return False
+
+def _extract_ban_from_row(row):
+    ban = {'id': row[0], 'artist': row[1], 'title': row[2]}
+    if ban['title'] == ALL_TITLES_MARKER:
+        ban['title'] = None
+    return ban
 
 def get_bans():
     db = _get_db()
@@ -44,16 +45,23 @@ def get_bans():
               artist,
               title
         '''):
-            ban = {'id': row[0], 'artist': row[1], 'title': row[2]}
+            ban = _extract_ban_from_row(row)
             bans.append(ban)
         return bans
     finally:
         db.close()
 
-def add_ban(artist, title):
+def add_ban(artist, title=None):
     db = _connect_db()
     ban_id = uuid.uuid4().hex
     logger.info("adding ban #%s on %s - %s", ban_id, artist, title)
+    if title is None:
+        title = ALL_TITLES_MARKER
+    # TODO - time-of-check-to-time-of-use bug here
+    # (someone else could add ban after our call to find_ban ...)
+    ban = _find_exact_ban(artist, title)
+    if ban is not None:
+        return ban
     try:
         cursor = db.cursor()
         cursor.execute('''
@@ -64,8 +72,31 @@ def add_ban(artist, title):
         ''', (ban_id, artist, title))
         db.commit()
         logger.info("added ban on %s - %s", artist, title)
-        ban = {'id': ban_id, 'artist': artist, 'title': title}
-        return ban
+        return _find_exact_ban(artist, title)
+    finally:
+        db.close()
+
+def _find_exact_ban(artist, title):
+    db = _get_db()
+    try:
+        cursor = db.cursor()
+        cursor.execute('''
+            SELECT
+              id,
+              artist,
+              title
+            FROM
+              ban b
+            WHERE
+              b.artist = ?
+              AND b.title = ?
+        ''', (artist, title))
+        row = cursor.fetchone()
+        if row is None:
+            return None
+        else:
+            ban = _extract_ban_from_row(row)
+            return ban
     finally:
         db.close()
 
@@ -84,7 +115,7 @@ def get_ban(ban_id):
               b.id = ?
         ''', (ban_id,))
         row = cursor.fetchone()
-        ban = {'id': row[0], 'artist': row[1], 'title': row[2]}
+        ban = _extract_ban_from_row(row)
         return ban
     finally:
         db.close()
@@ -99,6 +130,17 @@ def remove_ban(ban_id):
             WHERE
               id = ?
         ''', (ban_id,))
+        db.commit()
+    finally:
+        db.close()
+
+def remove_all_bans():
+    db = _get_db()
+    try:
+        cursor = db.cursor()
+        cursor.execute('''
+            DELETE FROM ban
+        ''')
         db.commit()
     finally:
         db.close()
@@ -132,8 +174,9 @@ def _create_tables_if_needed(db):
             CREATE TABLE IF NOT EXISTS ban (
                 id CHAR(32) NOT NULL PRIMARY KEY,
                 artist VARCHAR(255) NOT NULL,
-                title VARCHAR(255),
-                added_on DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+                title VARCHAR(255) NOT NULL,
+                added_on DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                CONSTRAINT c_ban_uniq_song UNIQUE (artist, title)
             )
         ''')
         db.commit()
