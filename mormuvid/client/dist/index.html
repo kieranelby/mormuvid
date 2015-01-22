@@ -13,6 +13,19 @@
         <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
         <![endif]-->
 
+        <!-- TODO - move somewhere more appropriate! -->
+        <script type="text/javascript">
+            var ws_notification_url = "ws://" + location.host + "/notifications";
+            // TODO - consider using: https://github.com/joewalnes/reconnecting-websocket
+            var ws = new WebSocket(ws_notification_url);
+            ws.onopen = function() {
+                ws.send("Hello, world");
+            };
+            ws.onmessage = function (evt) {
+                console.log(evt.data);
+            };
+        </script>
+
     </head>
     <body>
         <script src="scripts/344a55f8.components.js"></script>
@@ -22,5 +35,15 @@
         <script src="scripts/982d4954.main.js"></script>
 
         <script src="scripts/d41d8cd9.plugins.js"></script>
+
+        <!-- TODO - move somewhere more appropriate! -->
+        <script type="text/javascript">
+        $(document).on('click','.navbar-collapse.in',function(e) {
+            if( $(e.target).is('a') && ( $(e.target).attr('class') != 'dropdown-toggle' ) ) {
+                $(this).collapse('hide');
+            }
+        });
+        </script>
+
     </body>
 </html>

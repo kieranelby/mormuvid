@@ -6,7 +6,6 @@ from pykka.registry import ActorRegistry
 
 from mormuvid.librarian import Librarian
 from mormuvid.downloader import DownloaderActor
-from mormuvid.downloader import shutdown_downloaders
 from mormuvid.finder import FinderActor
 from mormuvid.scout import ScoutActor
 from mormuvid.web import start_web_and_block
@@ -49,13 +48,11 @@ class App:
 
     def stop(self):
         logger.info("exiting ...")
-        logger.info("stopping downloaders ...")
-        shutdown_downloaders()
         logger.info("waiting for actors to stop ...")
         try:
             ActorRegistry.stop_all(timeout=10)
-        except Exception:
-            logger.exception()
+        except Exception as ex:
+            logger.info("warning - actors failed to stop cleanly")
         logger.info("stopping web server ...")
         stop_web()
         logger.info("finished")

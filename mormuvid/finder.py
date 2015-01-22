@@ -4,17 +4,16 @@ import re
 from urlparse import urljoin
 
 import pykka
+import pykka.gevent
 from bs4 import BeautifulSoup
 
 logger = logging.getLogger(__name__)
 
-class FinderActor(pykka.ThreadingActor):
+class FinderActor(pykka.gevent.GeventActor):
     """
     Given the name of a popular song, finds a URL where its music video can be watched.
     This implementation merely searches on YouTube and picks the first result.
     """
-
-    use_daemon_thread = True
 
     query_base_url = "https://www.youtube.com/results"
 

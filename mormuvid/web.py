@@ -1,9 +1,12 @@
 import logging
 import os
 
-import cherrypy
 from bottle import Bottle, ServerAdapter, run, static_file, request, HTTPResponse, abort
 from requestlogger import WSGILogger, ApacheFormatter
+from gevent import monkey; monkey.patch_all()
+from gevent.pywsgi import WSGIServer
+from geventwebsocket import WebSocketError
+from geventwebsocket.handler import WebSocketHandler
 
 import jsonpickle
 
@@ -20,22 +23,6 @@ webserver = None
 _ROOT = os.path.abspath(os.path.dirname(__file__))
 _STATIC_PATH = os.path.join(_ROOT, 'client', 'dist')
 
-# Use our own adapter so we can shutdown cleanly ...
-class MyCherryPyServer(ServerAdapter):
-    server = None
-    def run(self, handler):
-        cherrypy.config.update({'log.screen': True})
-        from cherrypy import wsgiserver
-        self.options['bind_addr'] = (self.host, self.port)
-        self.options['wsgi_app'] = handler
-        self.server = wsgiserver.CherryPyWSGIServer(**self.options)
-        try:
-            self.server.start()
-        finally:
-            self.server.stop()
-    def stop(self):
-        self.server.stop()
-
 def start_web_and_block(the_librarian):
     global librarian
     global app
@@ -43,14 +30,27 @@ def start_web_and_block(the_librarian):
     librarian = the_librarian
     listen_addr = '0.0.0.0'
     listen_port = 2156
-    webserver = MyCherryPyServer(host=listen_addr, port=listen_port)
     logging_app = WSGILogger(app, [], ApacheFormatter())
-    # will block here
-    run(app=logging_app, server=webserver)
+    webserver = WSGIServer((listen_addr, listen_port), logging_app, handler_class=WebSocketHandler)
+    logger.info("listening on %s:%s", listen_addr, listen_port)
+    webserver.serve_forever()
 
 def stop_web():
     """Request for the server to shutdown."""
     webserver.stop()
+
+@app.route('/notifications')
+def handle_websocket():
+    wsock = request.environ.get('wsgi.websocket')
+    if not wsock:
+        abort(400, 'Expected WebSocket request.')
+
+    while True:
+        try:
+            message = wsock.receive()
+            wsock.send("Your message was: %r" % message)
+        except WebSocketError:
+            break
 
 @app.route('/api/songs', method='GET')
 def api_songs():

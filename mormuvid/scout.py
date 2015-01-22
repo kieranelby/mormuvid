@@ -10,15 +10,10 @@ from mormuvid.song import Song
 
 logger = logging.getLogger(__name__)
 
-class ScoutActor(pykka.ThreadingActor):
+class ScoutActor(pykka.gevent.GeventActor):
     """
     Discovers the names of popular songs.
     This implementation scrapes the 1.FM Top 40 play list.
-    """
-
-    use_daemon_thread = True
-    """
-    Want this to exit when the main thread exits.
     """
 
     recent_playlist_url = "http://www.1.fm/home/stationplaylist?id=top40"
