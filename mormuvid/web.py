@@ -4,9 +4,11 @@ import os
 from bottle import Bottle, ServerAdapter, run, static_file, request, HTTPResponse, abort
 from requestlogger import WSGILogger, ApacheFormatter
 from gevent import monkey; monkey.patch_all()
+from gevent import spawn;
 from gevent.pywsgi import WSGIServer
 from geventwebsocket import WebSocketError
 from geventwebsocket.handler import WebSocketHandler
+from gevent.queue import Queue
 
 import jsonpickle
 
@@ -19,6 +21,7 @@ logger = logging.getLogger(__name__)
 librarian = None
 app = Bottle()
 webserver = None
+notification_queue = Queue()
 
 _ROOT = os.path.abspath(os.path.dirname(__file__))
 _STATIC_PATH = os.path.join(_ROOT, 'client', 'dist')
@@ -39,16 +42,31 @@ def stop_web():
     """Request for the server to shutdown."""
     webserver.stop()
 
+def broadcast_notification(notification):
+    logger.info("queueing notification %s", notification)
+    notification_queue.put(notification)
+
+def poll_websocket(wsock):
+    while True:
+        try:
+            incoming_message = wsock.receive()
+            logger.info("got message on websocket: %s", incoming_message)
+        except WebSocketError:
+            break
+
 @app.route('/notifications')
 def handle_websocket():
+    global notification_queue
     wsock = request.environ.get('wsgi.websocket')
     if not wsock:
         abort(400, 'Expected WebSocket request.')
-
+    spawn(poll_websocket, wsock)
     while True:
         try:
-            message = wsock.receive()
-            wsock.send("Your message was: %r" % message)
+            notification = notification_queue.get()
+            outbound_message = jsonpickle.encode({'notification': notification})
+            logger.info("sending notification %s", notification)
+            wsock.send(outbound_message)
         except WebSocketError:
             break
 
@@ -61,6 +79,7 @@ def api_songs():
 @app.route('/api/songs', method='POST')
 def api_songs_create():
     global librarian
+    broadcast_notification
     requestSong = request.json['song']
     artist = requestSong['artist']
     title = requestSong['title']

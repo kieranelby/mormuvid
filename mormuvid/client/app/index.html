@@ -15,25 +15,13 @@
         <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
         <![endif]-->
 
-        <!-- TODO - move somewhere more appropriate! -->
-        <script type="text/javascript">
-            var ws_notification_url = "ws://" + location.host + "/notifications";
-            // TODO - consider using: https://github.com/joewalnes/reconnecting-websocket
-            var ws = new WebSocket(ws_notification_url);
-            ws.onopen = function() {
-                ws.send("Hello, world");
-            };
-            ws.onmessage = function (evt) {
-                console.log(evt.data);
-            };
-        </script>
-
     </head>
     <body>
         <!-- build:js(app) scripts/components.js -->
         <script src="bower_components/jquery/dist/jquery.js"></script>
         <script src="bower_components/handlebars/handlebars.runtime.js"></script>
         <script src="bower_components/bootstrap-sass-official/assets/javascripts/bootstrap.js"></script>
+        <script src="bower_components/reconnecting-websocket/reconnecting-websocket.js"></script>
         <script src="@@ember"></script>
         <script src="@@ember_data"></script>
         <!-- endbuild -->
@@ -48,15 +36,6 @@
 
         <!-- build:js scripts/plugins.js -->
         <!-- endbuild -->
-
-        <!-- TODO - move somewhere more appropriate! -->
-        <script type="text/javascript">
-        $(document).on('click','.navbar-collapse.in',function(e) {
-            if( $(e.target).is('a') && ( $(e.target).attr('class') != 'dropdown-toggle' ) ) {
-                $(this).collapse('hide');
-            }
-        });
-        </script>
 
     </body>
 </html>

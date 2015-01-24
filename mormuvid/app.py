@@ -40,10 +40,10 @@ class App:
         _hook_signals()
         _register_app(self)
         librarian = Librarian()
-        librarian.start()
         DownloaderActor.start(librarian)
         FinderActor.start(librarian)
         ScoutActor.start(librarian)
+        librarian.start()
         start_web_and_block(librarian)
 
     def stop(self):

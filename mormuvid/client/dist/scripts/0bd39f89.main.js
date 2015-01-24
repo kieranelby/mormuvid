@@ -1,55 +1,5 @@
 (function() {
 
-/* TODO - find right place to put this "woof" stuff ... */
-Ember.Application.initializer({
-  name: "registerWoofMessages",
-  initialize: function(container, application) {
-    application.register('woof:main', Ember.Woof);
-  }
-});
-
-Ember.Woof = Ember.ArrayProxy.extend({
-  content: Ember.A(),
-  timeout: 5000,
-  pushObject: function(object) {
-    object.typeClass = 'alert-' + object.type;
-    this._super(object);
-  },
-  danger: function(message) {
-    this.pushObject({
-      type: 'danger',
-      message: message
-    });
-  },
-  warning: function(message) {
-    this.pushObject({
-      type: 'warning',
-      message: message
-    });
-  },
-  info: function(message) {
-    this.pushObject({
-      type: 'info',
-      message: message
-    });
-  },
-  success: function(message) {
-    this.pushObject({
-      type: 'success',
-      message: message
-    });
-  }
-});
-
-Ember.Application.initializer({
-  name: "injectWoofMessages",
-  initialize: function(container, application) {
-    application.inject('controller', 'woof', 'woof:main');
-    application.inject('component',  'woof', 'woof:main');
-    application.inject('route',      'woof', 'woof:main');
-  }
-});
-
 var App = window.App = Ember.Application.create({
   LOG_TRANSITIONS: true, 
   LOG_TRANSITIONS_INTERNAL: true    
@@ -426,6 +376,56 @@ App.XWoofComponent = Ember.Component.extend({
   messages: Ember.computed.alias('woof')
 });
 
+Ember.Application.initializer({
+  name: "registerWoofMessages",
+  initialize: function(container, application) {
+    application.register('woof:main', Ember.Woof);
+  }
+});
+
+Ember.Woof = Ember.ArrayProxy.extend({
+  content: Ember.A(),
+  timeout: 5000,
+  pushObject: function(object) {
+    object.typeClass = 'alert-' + object.type;
+    this._super(object);
+  },
+  danger: function(message) {
+    this.pushObject({
+      type: 'danger',
+      message: message
+    });
+  },
+  warning: function(message) {
+    this.pushObject({
+      type: 'warning',
+      message: message
+    });
+  },
+  info: function(message) {
+    this.pushObject({
+      type: 'info',
+      message: message
+    });
+  },
+  success: function(message) {
+    this.pushObject({
+      type: 'success',
+      message: message
+    });
+  }
+});
+
+Ember.Application.initializer({
+  name: "injectWoofMessages",
+  initialize: function(container, application) {
+    application.inject('controller', 'woof', 'woof:main');
+    application.inject('component',  'woof', 'woof:main');
+    application.inject('route',      'woof', 'woof:main');
+//    application.inject('listenForNotifications', 'woof', 'woof:main');
+  }
+});
+
 
 })();
 
@@ -458,6 +458,51 @@ App.Router.map(function () {
     this.resource('bans');
     this.resource('videos');
     this.resource('settings');
+});
+
+
+})();
+
+(function() {
+
+Ember.Application.initializer({
+  name: "fixBoostrapHamburgerMenu",
+  initialize: function(container, application) {
+    $(document).on('click','.navbar-collapse.in',function(e) {
+        if( $(e.target).is('a') && ( $(e.target).attr('class') != 'dropdown-toggle' ) ) {
+            $(this).collapse('hide');
+        }
+    });
+  }
+});
+
+
+})();
+
+(function() {
+
+Ember.Application.initializer({
+  name: "listenForNotifications",
+  initialize: function(container, application) {
+    var woof = container.lookup('woof:main');
+    var ws_notification_url = "ws://" + location.host + "/notifications";
+    var ws = new ReconnectingWebSocket(ws_notification_url);
+    var sendPing = function() {
+      ws.send("ping");
+    }
+    ws.onopen = function() {
+      sendPing();
+    };
+    ws.onmessage = function (evt) {
+        console.log(evt.data);
+        msgObj = JSON.parse(evt.data);
+        if ('notification' in msgObj) {
+          var notification = msgObj.notification;
+          woof.info(notification);
+        }
+    };
+    window.setInterval(sendPing, 15 * 1000);
+  }
 });
 
 

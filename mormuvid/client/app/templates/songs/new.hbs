@@ -12,7 +12,6 @@
         <label for="inputVideoURL">Video URL (Optional)</label>
         {{input type="text" value=videoURL class="form-control" id="inputVideoURL" placeholder="e.g. https://www.youtube.com/watch?v=9bZkp7q19f0"}}
     </div>
-    {{x-woof}}
     <button class="btn" onclick="window.history.back()">Cancel</button>
     <button {{action "addSong"}} class="btn btn-primary">Add Song</button>
 </form>

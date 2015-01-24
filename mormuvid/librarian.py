@@ -17,6 +17,7 @@ from mormuvid.settings import add_observer, get_settings
 from mormuvid.finder import FinderActor
 from mormuvid.downloader import DownloaderActor
 from mormuvid.song import Song
+from mormuvid.web import broadcast_notification
 
 logger = logging.getLogger(__name__)
 
@@ -185,6 +186,7 @@ class Librarian:
     def _notify_download_queued(self, song):
         song.mark_download_queued()
         self._persist_song(song)
+        broadcast_notification("queueing download of %s" % song)
         return
 
     def notify_download_failed(self, song):
@@ -195,6 +197,7 @@ class Librarian:
     def notify_download_completed(self, song):
         song.mark_downloaded()
         self._persist_song(song)
+        broadcast_notification("downloaded %s" % song)
         return
 
     def notify_download_cancelled(self, song):
@@ -302,6 +305,18 @@ class Librarian:
             # will clean up stale ones as a side-effect
             song = self._read_lock_file(lock_filepath)
 
+    def _requeue_previosuly_queued_files(self):
+        logger.info("re-queue-ing previously queued files")
+        songs = self.get_songs()
+        for song in songs:
+            if song.status == 'FIND_QUEUED':
+                logger.info("re-queue-ing song %s for finding", song)
+                self._get_finder().find(song)
+            elif song.status == 'DOWNLOAD_QUEUED':
+                logger.info("re-queue-ing song %s for download", song)
+                self._get_downloader().download_song(song)
+
     def start(self):
         logger.info("videos_dir is %s", self._get_songs_dir())
         self._clean_up_lock_files()
+        self._requeue_previosuly_queued_files()
