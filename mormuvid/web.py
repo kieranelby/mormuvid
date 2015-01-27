@@ -1,14 +1,8 @@
 import logging
 import os
 
-from bottle import Bottle, ServerAdapter, run, static_file, request, HTTPResponse, abort
+from bottle import app, route, request, static_file, HTTPResponse
 from requestlogger import WSGILogger, ApacheFormatter
-from gevent import monkey; monkey.patch_all()
-from gevent import spawn;
-from gevent.pywsgi import WSGIServer
-from geventwebsocket import WebSocketError
-from geventwebsocket.handler import WebSocketHandler
-from gevent.queue import Queue
 
 import jsonpickle
 
@@ -16,12 +10,11 @@ from mormuvid.song import Song
 from mormuvid.settings import get_settings
 from mormuvid.settings import update_settings
 from mormuvid.bans import add_ban, get_bans, get_ban, remove_ban
+from mormuvid.notifications import wrap_wsgi_http_app
 
 logger = logging.getLogger(__name__)
 librarian = None
-app = Bottle()
 webserver = None
-notification_queue = Queue()
 
 _ROOT = os.path.abspath(os.path.dirname(__file__))
 _STATIC_PATH = os.path.join(_ROOT, 'client', 'dist')
@@ -30,11 +23,11 @@ def start_web_and_block(the_librarian):
     global librarian
     global app
     global webserver
+    global wsgi_http_app
     librarian = the_librarian
-    listen_addr = '0.0.0.0'
-    listen_port = 2156
-    logging_app = WSGILogger(app, [], ApacheFormatter())
-    webserver = WSGIServer((listen_addr, listen_port), logging_app, handler_class=WebSocketHandler)
+    functional_wsgi_http_app = app()
+    logging_wsgi_http_app = WSGILogger(functional_wsgi_http_app, [], ApacheFormatter())
+    webserver = wrap_wsgi_http_app(logging_wsgi_http_app)
     logger.info("listening on %s:%s", listen_addr, listen_port)
     webserver.serve_forever()
 
@@ -42,41 +35,13 @@ def stop_web():
     """Request for the server to shutdown."""
     webserver.stop()
 
-def broadcast_notification(notification):
-    logger.info("queueing notification %s", notification)
-    notification_queue.put(notification)
-
-def poll_websocket(wsock):
-    while True:
-        try:
-            incoming_message = wsock.receive()
-            logger.info("got message on websocket: %s", incoming_message)
-        except WebSocketError:
-            break
-
-@app.route('/notifications')
-def handle_websocket():
-    global notification_queue
-    wsock = request.environ.get('wsgi.websocket')
-    if not wsock:
-        abort(400, 'Expected WebSocket request.')
-    spawn(poll_websocket, wsock)
-    while True:
-        try:
-            notification = notification_queue.get()
-            outbound_message = jsonpickle.encode({'notification': notification})
-            logger.info("sending notification %s", notification)
-            wsock.send(outbound_message)
-        except WebSocketError:
-            break
-
-@app.route('/api/songs', method='GET')
+@route('/api/songs', method='GET')
 def api_songs():
     global librarian
     songs = librarian.get_songs()
     return jsonpickle.encode({'songs': songs})
 
-@app.route('/api/songs', method='POST')
+@route('/api/songs', method='POST')
 def api_songs_create():
     global librarian
     broadcast_notification
@@ -88,14 +53,14 @@ def api_songs_create():
     song = librarian.notify_song_requested(artist, title, videoURL)
     return jsonpickle.encode({'song': song})
 
-@app.route('/api/songs/<song_id>')
+@route('/api/songs/<song_id>')
 def api_song(song_id):
     global librarian
     song = librarian.get_song_by_id(song_id)
     if song is not None:
         return jsonpickle.encode({'song': song})
 
-@app.route('/api/songs/<song_id>', method='PUT')
+@route('/api/songs/<song_id>', method='PUT')
 def api_song_update(song_id):
     global librarian
     requestSong = request.json['song']
@@ -107,7 +72,7 @@ def api_song_update(song_id):
     else:
         return jsonpickle.encode({'song': resulting_song})
 
-@app.route('/api/songs/<song_id>', method='DELETE')
+@route('/api/songs/<song_id>', method='DELETE')
 def api_song_delete(song_id):
     global librarian
     song = librarian.get_song_by_id(song_id)
@@ -115,7 +80,7 @@ def api_song_delete(song_id):
         librarian.delete(song)
     return HTTPResponse(status=204)
 
-@app.route('/api/videos', method='POST')
+@route('/api/videos', method='POST')
 def api_videos_create():
     global librarian
     requestVideo = request.json['video']
@@ -124,12 +89,12 @@ def api_videos_create():
     video = librarian.request_other_video(videoURL)
     return jsonpickle.encode({'video': video})
 
-@app.route('/api/settings/<dummy_id>', method='GET')
+@route('/api/settings/<dummy_id>', method='GET')
 def api_settings_get(dummy_id):
     settings = get_settings()
     return jsonpickle.encode({'settings': settings})
 
-@app.route('/api/settings/<dummy_id>', method='PUT')
+@route('/api/settings/<dummy_id>', method='PUT')
 def api_settings_put(dummy_id):
     settings_from_request = request.json['settings']
     try:
@@ -139,32 +104,32 @@ def api_settings_put(dummy_id):
         render_json_error_response("failed to save settings")
     return api_settings_get(dummy_id)
 
-@app.route('/api/bans', method='GET')
+@route('/api/bans', method='GET')
 def api_bans():
     bans = get_bans()
     return jsonpickle.encode({'bans': bans})
 
-@app.route('/api/bans/<ban_id>', method='GET')
+@route('/api/bans/<ban_id>', method='GET')
 def api_bans_get(ban_id):
     ban = get_ban(ban_id)
     return jsonpickle.encode({'ban': ban})
 
-@app.route('/api/bans/<ban_id>', method='DELETE')
+@route('/api/bans/<ban_id>', method='DELETE')
 def api_bans_delete(ban_id):
     ban = remove_ban(ban_id)
     return HTTPResponse(status=204)
 
-@app.route('/api/bans', method='POST')
+@route('/api/bans', method='POST')
 def api_bans_create():
     requested_ban = request.json['ban']
     ban = add_ban(requested_ban['artist'], requested_ban['title'])
     return jsonpickle.encode({'ban': ban})
 
-@app.route('/')
+@route('/')
 def root():
     return other_path('index.html')
 
-@app.route('/<other_path:path>')
+@route('/<other_path:path>')
 def other_path(other_path):
     logger.info("playing static file %s from %s", other_path, _STATIC_PATH)
     return static_file(other_path, root=_STATIC_PATH)
@@ -175,4 +140,5 @@ def render_json_error_response(err_msg):
          "unknown": [ err_msg ]
         }
     }
+    # the ember data rest adapter likes HTTP 422 for errors ...
     raise HTTPResponse(body=jsonpickle.encode(errors), status=422)

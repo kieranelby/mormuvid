@@ -17,7 +17,7 @@ from mormuvid.settings import add_observer, get_settings
 from mormuvid.finder import FinderActor
 from mormuvid.downloader import DownloaderActor
 from mormuvid.song import Song
-from mormuvid.web import broadcast_notification
+from mormuvid.notifications import broadcast_notification
 
 logger = logging.getLogger(__name__)
 
