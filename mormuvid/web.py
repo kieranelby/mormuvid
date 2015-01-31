@@ -27,7 +27,9 @@ def start_web_and_block(the_librarian):
     librarian = the_librarian
     functional_wsgi_http_app = app()
     logging_wsgi_http_app = WSGILogger(functional_wsgi_http_app, [], ApacheFormatter())
-    webserver = wrap_wsgi_http_app(logging_wsgi_http_app)
+    listen_addr = '0.0.0.0'
+    listen_port = 2156
+    webserver = wrap_wsgi_http_app(logging_wsgi_http_app, listen_addr, listen_port)
     logger.info("listening on %s:%s", listen_addr, listen_port)
     webserver.serve_forever()
 

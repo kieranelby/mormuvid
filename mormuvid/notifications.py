@@ -14,11 +14,9 @@ logger = logging.getLogger(__name__)
 wrapped_wsgi_http_app = None
 notification_queues = []
 
-def wrap_wsgi_http_app(wsgi_http_app):
+def wrap_wsgi_http_app(wsgi_http_app, listen_addr, listen_port):
     global wrapped_wsgi_http_app
     wrapped_wsgi_http_app = wsgi_http_app
-    listen_addr = '0.0.0.0'
-    listen_port = 2156
     webserver = WSGIServer((listen_addr, listen_port), our_wsgi_app, handler_class=WebSocketHandler)
     return webserver
 
