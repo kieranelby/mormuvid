@@ -7,14 +7,5 @@ apt packages:
 nodejs
 ruby1.9.1-dev
 
-npm modules:
-bower
-yo
-grunt-cli
-
 ruby gems: (had to override ubuntu 12.04 ones)
 compass
-
-BUILD PROCESS NOT COVERED BY setup.py
-
-Need to run grunt in mormuvid/client directory to re-generate files in mormuvid/client/dist.
