@@ -12,7 +12,7 @@ Ember.Application.initializer({
 
 Ember.Woof = Ember.ArrayProxy.extend({
   content: Ember.A(),
-  timeout: 5000,
+  timeout: 10 * 1000,
   pushObject: function(object) {
     object.typeClass = 'alert-' + object.type;
     this._super(object);

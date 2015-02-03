@@ -3,7 +3,7 @@ Ember.Application.initializer({
   initialize: function(container, application) {
     var woof = container.lookup('woof:main');
     var ws_notification_url = "ws://" + location.host + "/notifications";
-    var ws = new ReconnectingWebSocket(ws_notification_url);
+    var ws = new RcSocket(ws_notification_url);
     var sendPing = function() {
       ws.send("ping");
     }

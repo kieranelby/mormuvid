@@ -1,0 +1,7 @@
+# Confusingly, this manifest only seems to be used for 'python setup.py sdist'.
+# We'll try to include everything needed to build (including the client assets).
+include README.rst
+include mormuvid/client/.bowerrc
+include mormuvid/client/*.json
+include mormuvid/client/*.js
+recursive-include mormuvid/client/app **

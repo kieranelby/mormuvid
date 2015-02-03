@@ -1,11 +1,69 @@
-from setuptools import setup, find_packages  # Always prefer setuptools over distutils
+from setuptools import setup, find_packages
+from distutils import log
+from setuptools.command.build_py import build_py as BuildPyCommand
 from setuptools.command.test import test as TestCommand
-from codecs import open  # To use a consistent encoding
+from codecs import open
 from os import path
 import os
 import sys
+import subprocess
 
+MY_PACKAGE = 'mormuvid'
+CLIENT_SUBDIR = 'client'
+CLIENT_DIST_SUBDIR = os.path.join(CLIENT_SUBDIR, 'dist')
+
+# Figure out the directory where this setup.py lives.
 here = path.abspath(path.dirname(__file__))
+
+class MyBuild(BuildPyCommand):
+
+    def _get_data_files(self):
+
+        data = BuildPyCommand._get_data_files(self)
+
+        log.info("%s: adding extra package data files from web client dist dir", MY_PACKAGE)
+
+        # Locate package source directory
+        pkg_src_dir = self.get_package_dir(MY_PACKAGE)
+
+        # Compute package build directory
+        pkg_build_dir = os.path.join(*([self.build_lib] + MY_PACKAGE.split('.')))
+
+        # Add all the files from the client dist directory
+        # (which were built by run(self) using npm install)
+
+        client_dist_src_dir = os.path.join(pkg_src_dir, CLIENT_DIST_SUBDIR)
+        client_dist_build_dir = os.path.join(pkg_build_dir, CLIENT_DIST_SUBDIR)
+
+        walk_root_path = client_dist_src_dir
+        walk_root_path_strip_len = len(walk_root_path) + 1
+        for dir_name, junk, files in os.walk(walk_root_path):
+            rel_dir_name = dir_name[walk_root_path_strip_len:]
+            dst_dir_name = os.path.join(client_dist_build_dir, rel_dir_name)
+            log.info("found extra files %s in %s for %s", files, dir_name, dst_dir_name)
+            data.append(
+                ( MY_PACKAGE,
+                  dir_name,
+                  dst_dir_name,
+                  files))
+
+        return data
+
+    def run(self):
+
+        log.info("%s: building web client assets", MY_PACKAGE)
+
+        client_dir = os.path.join(MY_PACKAGE, CLIENT_SUBDIR)
+
+        client_build_command_line = ['npm', 'install']
+
+        if not self.dry_run:
+            log.info("running %s from %s", client_build_command_line, client_dir)
+            subprocess.call(client_build_command_line, cwd=client_dir)
+        else:
+            log.info("not actually running %s from %s", client_build_command_line, client_dir)
+
+        BuildPyCommand.run(self)
 
 class PyTest(TestCommand):
     user_options = [('pytest-args=', 'a', "Arguments to pass to py.test")]
@@ -28,18 +86,6 @@ class PyTest(TestCommand):
 # Get the long description from the relevant file
 with open(path.join(here, 'README.rst'), encoding='utf-8') as f:
     long_description = f.read()
-
-def recursive_file_list(dir):
-    matches = []
-    for root, dirnames, filenames in os.walk(dir):
-        for filename in filenames:
-            matches.append(os.path.join(root, filename))
-    return matches
-
-# Sigh.
-mormuvid_client_dist_files = \
-  [path.relpath(x, path.join(here, 'mormuvid')) for x in \
-    recursive_file_list(path.join(here, 'mormuvid', 'client', 'dist'))]
 
 setup(
     name='mormuvid',
@@ -89,10 +135,6 @@ setup(
     # What does your project relate to?
     keywords='download music videos',
 
-    # You can just specify the packages manually here if your project is
-    # simple. Or you can use find_packages().
-    packages=['mormuvid'],
-
     # List run-time dependencies here.  These will be installed by pip when your
     # project is installed. For an analysis of "install_requires" vs pip's
     # requirements files see:
@@ -113,12 +155,9 @@ setup(
         'gevent-websocket>=0.9.3'
     ],
 
-    # TODO - explain
+    packages=find_packages(),
+    # Sigh. This doesn't seem to work very well for this project.
     include_package_data=False,
-    package_data={
-        'mormuvid': mormuvid_client_dist_files + [
-        ],
-    },
 
     # Although 'package_data' is the preferred approach, in some case you may
     # need to place data files outside of your packages.
@@ -137,5 +176,5 @@ setup(
 
     # Use pytest for tests.
     tests_require=['pytest'],
-    cmdclass = {'test': PyTest},
+    cmdclass = {'test': PyTest, 'build_py': MyBuild}
 )
