@@ -49,9 +49,29 @@ class MyBuild(BuildPyCommand):
 
         return data
 
+    def _check_client_build_commands_exist(self):
+        bad = False
+        try:
+            if subprocess.call(['npm', 'version']) != 0:
+                raise Exception("non-zero exit code returned")
+        except:
+            log.warn("need npm installed (part of node.js)")
+            bad = True
+        try:
+            if subprocess.call(['compass', 'version']) != 0:
+                raise Exception("non-zero exit code returned")
+        except:
+            log.warn("need compass & sass installed (ruby gems)")
+            bad = True
+        if bad:
+            from distutils.errors import DistutilsError
+            raise DistutilsError("client build commands not found")
+
     def run(self):
 
         log.info("%s: building web client assets", MY_PACKAGE)
+
+        self._check_client_build_commands_exist()
 
         client_dir = os.path.join(MY_PACKAGE, CLIENT_SUBDIR)
 
