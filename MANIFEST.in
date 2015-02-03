@@ -5,3 +5,4 @@ include mormuvid/client/.bowerrc
 include mormuvid/client/*.json
 include mormuvid/client/*.js
 recursive-include mormuvid/client/app **
+recursive-include mormuvid/client/test **
