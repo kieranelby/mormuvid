@@ -17,9 +17,14 @@ here = path.abspath(path.dirname(__file__))
 
 class MyBuild(BuildPyCommand):
 
-    def _get_data_files(self):
+    def __getattr__(self, attr):
+        if attr == 'data_files':
+            return self._get_data_files_including_client()
+        return BuildPyCommand.__getattr__(self, attr)
 
-        data = BuildPyCommand._get_data_files(self)
+    def _get_data_files_including_client(self):
+
+        data = BuildPyCommand.__getattr__(self, 'data_files')
 
         log.info("%s: adding extra package data files from web client dist dir", MY_PACKAGE)
 
