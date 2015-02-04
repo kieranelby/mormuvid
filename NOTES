@@ -10,3 +10,9 @@ Ruby Gems: (the Ubuntu ruby-compass package is quite old)
 Note that on Ubuntu 12.04, the following is needed first to pick up a newer npm ...
   apt-add-repository ppa:chris-lea/node.js
   apt-get update
+
+I found this useful when being really paranoid about doing a clean build:
+(assuming using a virtualenv in ~/venv ..)
+  rm -rf build dist mormuvid/client/dist ~/venv/bin/mormuvid \
+    ~/venv/lib/python2.7/site-packages/mormuvid-0.0.1-py2.7.egg \
+    ~/venv/local/lib/python2.7/site-packages/mormuvid-0.0.1-py2.7.egg

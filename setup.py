@@ -17,6 +17,10 @@ here = path.abspath(path.dirname(__file__))
 
 class MyBuild(BuildPyCommand):
 
+    def __init__(self, *args, **kwargs):
+        self.client_built = False
+        return BuildPyCommand.__init__(self, *args, **kwargs)
+
     def __getattr__(self, attr):
         if attr == 'data_files':
             return self._get_data_files_including_client()
@@ -27,6 +31,8 @@ class MyBuild(BuildPyCommand):
         data = BuildPyCommand.__getattr__(self, 'data_files')
 
         log.info("%s: adding extra package data files from web client dist dir", MY_PACKAGE)
+
+        self.build_client_assets()
 
         # Locate package source directory
         pkg_src_dir = self.get_package_dir(MY_PACKAGE)
@@ -72,7 +78,11 @@ class MyBuild(BuildPyCommand):
             from distutils.errors import DistutilsError
             raise DistutilsError("client build commands not found")
 
-    def run(self):
+    def build_client_assets(self):
+
+        if self.client_built:
+            log.info("%s: already built web client assets", MY_PACKAGE)
+            return
 
         log.info("%s: building web client assets", MY_PACKAGE)
 
@@ -88,6 +98,10 @@ class MyBuild(BuildPyCommand):
         else:
             log.info("not actually running %s from %s", client_build_command_line, client_dir)
 
+        self.client_built = True
+
+    def run(self):
+        self.build_client_assets()
         BuildPyCommand.run(self)
 
 class PyTest(TestCommand):
