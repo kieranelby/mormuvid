@@ -7,5 +7,6 @@ Ubuntu packages:
 Ruby Gems: (the Ubuntu ruby-compass package is quite old)
 - gem install compass
 
-Note that on Ubuntu 12.04, the following is needed:
+Note that on Ubuntu 12.04, the following is needed first to pick up a newer npm ...
   apt-add-repository ppa:chris-lea/node.js
+  apt-get update
