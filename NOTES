@@ -1,18 +1,16 @@
 When building from source, "python setup.py install" requires the following non-Python packages:
 
-Ubuntu packages:
-- apt-get install nodejs
-- apt-get install ruby1.9.1-dev
+  Ubuntu packages:
+  - apt-get install nodejs
+  - apt-get install ruby1.9.1-dev
 
-Ruby Gems: (the Ubuntu ruby-compass package is quite old)
-- gem install compass
+  On Ubuntu 12.04, the following is needed first to pick up a newer npm ...
+  - apt-add-repository ppa:chris-lea/node.js
+  - apt-get update
 
-Note that on Ubuntu 12.04, the following is needed first to pick up a newer npm ...
-  apt-add-repository ppa:chris-lea/node.js
-  apt-get update
+  Ruby Gems: (the Ubuntu ruby-compass package is quite old)
+  - gem install compass
 
-I found this useful when being really paranoid about doing a clean build:
-(assuming using a virtualenv in ~/venv ..)
-  rm -rf build dist mormuvid/client/dist ~/venv/bin/mormuvid \
-    ~/venv/lib/python2.7/site-packages/mormuvid-0.0.1-py2.7.egg \
-    ~/venv/local/lib/python2.7/site-packages/mormuvid-0.0.1-py2.7.egg
+Amazingly, mormuvid (when built to an egg with python setup.py bdist_egg) works out-of-the box on Windows with easy_install.
+
+There are some known problems with python versions newer than 2.7.7 related to the SSL back-ports being incompatible with gevent 1.0.1 ...

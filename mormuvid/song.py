@@ -27,6 +27,12 @@ nfo_template_str = """<musicvideo>
 </musicvideo>
 """
 
+def _safe_strip(maybe_str):
+    if maybe_str is None:
+        return None
+    else:
+        return maybe_str.strip()
+
 def _make_id(artist, title):
     raw_name = artist + " - " + title
     ascii_name = raw_name.encode('punycode')
@@ -117,8 +123,8 @@ class Song(object):
         is_mormuvid_file = True
         soup = BeautifulSoup(nfo_xml)
         musicvideo = soup.musicvideo
-        song = Song(musicvideo.artist.string.strip(), musicvideo.title.string.strip(), base_file_name_wo_ext)
-        song.album = musicvideo.album.string.strip()
+        song = Song(_safe_strip(musicvideo.artist.string), _safe_strip(musicvideo.title.string), base_file_name_wo_ext)
+        song.album = _safe_strip(musicvideo.album.string)
         mormuvid_info = soup.musicvideo.mormuvid
         if mormuvid_info is None:
             is_mormuvid_file = False
@@ -132,11 +138,11 @@ class Song(object):
             song.video_watch_url = None
             song.scouted_by = None
         else:
-            song.status = mormuvid_info.status.string.strip()
-            song.updated_at = float(mormuvid_info.updated_at.string.strip())
-            song.video_watch_url = mormuvid_info.video_watch_url.string.strip()
+            song.status = _safe_strip(mormuvid_info.status.string)
+            song.updated_at = float(_safe_strip(mormuvid_info.updated_at.string))
+            song.video_watch_url = _safe_strip(mormuvid_info.video_watch_url.string)
             try:
-                song.scouted_by = mormuvid_info.scouted_by.string.strip()
+                song.scouted_by = _safe_strip(mormuvid_info.scouted_by.string)
             except:
                 song.scouted_by = None
 
