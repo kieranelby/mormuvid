@@ -16,6 +16,7 @@ CLIENT_DIST_SUBDIR = os.path.join(CLIENT_SUBDIR, 'dist')
 here = path.abspath(path.dirname(__file__))
 
 class MyBuild(BuildPyCommand):
+    """Ensures that the client-side assets are built and installed too."""
 
     def __init__(self, *args, **kwargs):
         self.client_built = False
@@ -132,7 +133,7 @@ setup(
     # Versions should comply with PEP440.  For a discussion on single-sourcing
     # the version across setup.py and the project code, see
     # http://packaging.python.org/en/latest/tutorial.html#version
-    version='0.0.1',
+    version='0.1.0',
 
     description='Automatically Downloads Popular Music Videos',
     long_description=long_description,
@@ -160,7 +161,6 @@ setup(
         'Topic :: Internet :: WWW/HTTP :: Indexing/Search',
         'Topic :: Multimedia :: Video',
         'Topic :: Multimedia :: Sound/Audio',
-        'Topic :: Software Development :: Build Tools',
 
         # Pick your license as you wish (should match "license" above)
         'License :: OSI Approved :: MIT License',
@@ -168,7 +168,7 @@ setup(
         # Specify the Python versions you support here. In particular, ensure
         # that you indicate whether you support Python 2, Python 3 or both.
         'Programming Language :: Python :: 2',
-        'Programming Language :: Python :: 2.7',
+        'Programming Language :: Python :: 2.7'
     ],
 
     # What does your project relate to?
