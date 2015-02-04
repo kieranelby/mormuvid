@@ -8,4 +8,4 @@ Ruby Gems: (the Ubuntu ruby-compass package is quite old)
 - gem install compass
 
 Note that on Ubuntu 12.04, the following is needed:
-  apt-add-repository ppa chris-lea/node.js
+  apt-add-repository ppa:chris-lea/node.js
