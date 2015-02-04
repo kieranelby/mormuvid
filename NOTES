@@ -1,11 +1,11 @@
-REQUIREMENTS NOT LISTED IN setup.py
+When building from source, "python setup.py install" requires the following non-Python packages:
 
-apt repositories needed on 12.04:
-ppa:chris-lea/node.js
+Ubuntu packages:
+- apt-get install nodejs
+- apt-get install ruby1.9.1-dev
 
-apt packages:
-nodejs
-ruby1.9.1-dev
+Ruby Gems: (the Ubuntu ruby-compass package is quite old)
+- gem install compass
 
-ruby gems: (had to override ubuntu 12.04 ones)
-compass
+Note that on Ubuntu 12.04, the following is needed:
+  apt-add-repository ppa chris-lea/node.js
