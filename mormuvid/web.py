@@ -47,7 +47,6 @@ def api_songs():
 @route('/api/songs', method='POST')
 def api_songs_create():
     global librarian
-    broadcast_notification
     requestSong = request.json['song']
     artist = requestSong['artist']
     title = requestSong['title']
