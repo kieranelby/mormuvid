@@ -185,7 +185,7 @@ setup(
         'beautifulsoup4>=4.3.2',
         'requests>=2.3.0',
         'pykka>=1.2.0',
-        'youtube-dl>=2015.10.13',
+        'youtube-dl>=2016.01.23',
         'bottle>=0.12.7',
         'wsgi-request-logger>=0.4.1',
         'jsonpickle>=0.8.0',
